@@ -120,6 +120,35 @@ const fetchReview = async () => {
   });
 };
 
+var globe_id = 1;
+
+const fetchDiscussion = async () => {
+  await api.get(`/discussions`).then((res) => {
+    for (item of res.data) {
+      item.question.forEach((val, index) => {
+        db.query(
+          `INSERT INTO discussions (id,eventid,userid,question,posted_at) values (${globe_id},${item.eventid},${item.question_id[index]},${val},timestamp('2023-08-04'))`,
+          (err, result) => {
+            if (err) console.log(err);
+            console.log(result);
+          }
+        );
+        let this_reply = Object.entries(item.reply)[index];
+        let this_userid = Object.entries(item.reply_id)[index];
+        if (this_reply[1].length) {
+          this_reply.forEach((string, idx) => {
+            db.query(
+              `INSERT INTO discusson_reply (event_id,userid, discussion_id, reply_body,posted_at) 
+              values (${item.eventid},${this_userid[idx]},${globe_id},'${string}',timestamp('2023-08-03'))`
+            );
+          });
+        }
+        globe_id += 1;
+      });
+    }
+  });
+};
+
 // db.query(
 //   `INSERT INTO ticket_category (id,category_name) values (1,'VIP'),(2,'PRESALE'),(3,'NORMAL'),(4,'FREE')`,
 //   (err, result) => {
