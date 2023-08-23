@@ -1,7 +1,7 @@
 const mysql = require("mysql2");
 const dotenv = require("dotenv");
 const axios = require("axios");
-const data = require("./database.json");
+const data = require("../database.json");
 dotenv.config();
 
 const db = mysql.createConnection({
@@ -149,14 +149,8 @@ const fetchDiscussion = async () => {
   });
 };
 
-// db.query(
-//   `INSERT INTO ticket_category (id,category_name) values (1,'VIP'),(2,'PRESALE'),(3,'NORMAL'),(4,'FREE')`,
-//   (err, result) => {
-//     if (err) console.log(err);
-//   }
-// );
-
 // fetchuser("/users", "users");
 // fetchEvents();
 // fetchTickets();
 // fetchReview();
+fetchDiscussion();
