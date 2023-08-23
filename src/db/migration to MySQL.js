@@ -1,7 +1,7 @@
 const mysql = require("mysql2");
 const dotenv = require("dotenv");
 const axios = require("axios");
-const data = require("../database.json");
+// const data = require("../database.json");
 dotenv.config();
 
 const db = mysql.createConnection({
@@ -125,6 +125,7 @@ var globe_id = 1;
 const fetchDiscussion = async () => {
   await api.get(`/discussions`).then((res) => {
     for (item of res.data) {
+      console.log(item.question);
       item.question.forEach((val, index) => {
         db.query(
           `INSERT INTO discussions (id,eventid,userid,question,posted_at) values (${globe_id},${item.eventid},${item.question_id[index]},${val},timestamp('2023-08-04'))`,
@@ -135,14 +136,15 @@ const fetchDiscussion = async () => {
         );
         let this_reply = Object.entries(item.reply)[index];
         let this_userid = Object.entries(item.reply_id)[index];
-        if (this_reply[1].length) {
-          this_reply.forEach((string, idx) => {
-            db.query(
-              `INSERT INTO discusson_reply (event_id,userid, discussion_id, reply_body,posted_at) 
-              values (${item.eventid},${this_userid[idx]},${globe_id},'${string}',timestamp('2023-08-03'))`
-            );
-          });
-        }
+        // console.log(this_reply[0], `a`, this_userid);
+        // if (this_reply[1].length) {
+        //   this_reply.forEach((string, idx) => {
+        //     db.query(
+        //       `INSERT INTO discusson_reply (event_id,userid, discussion_id, reply_body,posted_at)
+        //       values (${item.eventid},${this_userid[idx]},${globe_id},'${string}',timestamp('2023-08-03'))`
+        //     );
+        //   });
+        // }
         globe_id += 1;
       });
     }
