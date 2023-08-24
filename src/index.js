@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 //route
-const eventroute = require("./route/events_router");
-app.use(`/events`, eventroute);
+const eventrouter = require("./route/events_router");
+app.use(`/events`, eventrouter);
 
 app.listen(PORT, () => {
   console.log(`server is online on PORT ${PORT}`);
