@@ -8,4 +8,5 @@ const update = controller.update;
 const getOne = controller.getOne;
 const deleteOne = controller.delete;
 
+
 module.exports = { getAllEvents, update, getOne, deleteOne };

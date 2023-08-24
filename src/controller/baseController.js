@@ -2,6 +2,7 @@ const db = require("../db/dbConfiguration");
 
 const baseController = {
   table: "",
+  limit: 50,
   getAll: async (req, res) => {
     try {
       const [response] = await db
