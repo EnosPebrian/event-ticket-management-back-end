@@ -1,7 +1,7 @@
 const db = require("../db/dbConfiguration");
 
 const controller = require("./baseController");
-controller.table = "reviews";
+controller.table = "users";
 
 const getAll = controller.getAll;
 const update = controller.update;

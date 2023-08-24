@@ -32,7 +32,7 @@ const baseController = {
       return res.status(400).send(err.message);
     }
   },
-  getOne: async (req, res) => {
+  getById: async (req, res) => {
     try {
       const id = req.params.id;
       const [[response]] = await db

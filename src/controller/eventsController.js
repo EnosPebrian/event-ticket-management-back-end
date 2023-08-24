@@ -5,8 +5,13 @@ controller.table = "events";
 
 const getAllEvents = controller.getAll;
 const update = controller.update;
-const getOne = controller.getOne;
+const getById = controller.getById;
 const deleteOne = controller.delete;
+const getByQuery = (req, res) => {};
 
-
-module.exports = { getAllEvents, update, getOne, deleteOne };
+module.exports = {
+  getAllEvents,
+  update,
+  getById,
+  deleteOne,
+};

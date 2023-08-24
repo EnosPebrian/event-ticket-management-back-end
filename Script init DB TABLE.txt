@@ -1,0 +1,8 @@
+sequelize model:generate --name Event --attributes name:string,location:string,venue:string,category:string,date_start:dateonly,date_end:dateonly,time_start:time,time_end:time,description:text,vip_ticket_price:integer,vip_ticket_stock:integer,presale_ticket_price:integer,presale_ticket_stock:integer,normal_ticket_price:integer,normal_ticket_stock:integer,event_creator_userid:integer,isfree:integer,is_sponsored:boolean
+
+
+sequelize model:generate --name User --attributes email:string, password:string,username:string,bio:string,points:integer,referralcode:string,role:string,birthdate:dateonly
+
+sequelize model:generate --name Ticket --attributes userid:integer,eventid:integer,ticketcode:string,tiket_category:integer
+
+sequelize model:generate --name Review --attributes eventid:integer,userid:integer,ratings:integer,ticketcode:string,comments:text
