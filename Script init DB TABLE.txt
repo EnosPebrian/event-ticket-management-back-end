@@ -6,3 +6,7 @@ sequelize model:generate --name User --attributes email:string, password:string,
 sequelize model:generate --name Ticket --attributes userid:integer,eventid:integer,ticketcode:string,tiket_category:integer
 
 sequelize model:generate --name Review --attributes eventid:integer,userid:integer,ratings:integer,ticketcode:string,comments:text
+
+sequelize model:generate --name Discussions --attributes eventid:integer,userid:integer,question_text:string
+
+sequelize model:generate --name Discussion_reply --attributes eventid:integer,userid:integer,discussion_id:integer, reply_text:string

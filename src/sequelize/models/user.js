@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       referralcode: DataTypes.STRING,
       role: DataTypes.STRING,
       birthdate: DataTypes.DATEONLY,
+      location: DataTypes.INTEGER,
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
     },
