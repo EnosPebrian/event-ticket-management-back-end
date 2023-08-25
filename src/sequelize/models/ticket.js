@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Ticket.belongsTo(models.Ticket_category, { foreignKey: "id" });
+      Ticket.belongsTo(models.User, { foreignKey: "id" });
+      Ticket.belongsTo(models.Event, { foreignKey: "id" });
+      Ticket.hasOne(models.Review, { foreignKey: "ticketcode" });
     }
   }
   Ticket.init(
@@ -16,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       userid: DataTypes.INTEGER,
       eventid: DataTypes.INTEGER,
       ticketcode: DataTypes.STRING,
-      ticket_category: DataTypes.INTEGER,
+      category: DataTypes.INTEGER,
       ticket_price: DataTypes.INTEGER,
     },
     {

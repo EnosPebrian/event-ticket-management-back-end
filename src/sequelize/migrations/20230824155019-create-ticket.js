@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      ticket_category: {
+      category: {
         type: Sequelize.INTEGER,
         references: { model: { tableName: `ticket_categories`, key: `id` } },
       },

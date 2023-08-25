@@ -48,5 +48,11 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.Event = require("./event")(sequelize, Sequelize);
 db.User = require("./user")(sequelize, Sequelize);
+db.Review = require("./review")(sequelize, Sequelize);
+db.Discussion = require("./discussion")(sequelize, Sequelize);
+db.Discussion_reply = require("./discussion_reply")(sequelize, Sequelize);
+db.Location = require("./location")(sequelize, Sequelize);
+db.Ticket = require("./ticket")(sequelize, Sequelize);
+db.Photo_event = require("./photo_event")(sequelize, Sequelize);
 
 module.exports = db;

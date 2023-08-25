@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Location.hasMany(models.Event, { foreignKey: "location" });
+      Location.hasMany(models.User, { foreignKey: "location" });
     }
   }
   Location.init(
