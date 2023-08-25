@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       normal_ticket_stock: DataTypes.INTEGER,
       event_creator_userid: DataTypes.INTEGER,
       isfree: DataTypes.BOOLEAN,
-      is_sponsored: DataTypes.BOOLEAN,
+      is_sponsored: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
       sequelize,

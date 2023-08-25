@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       role: DataTypes.STRING,
       birthdate: DataTypes.DATEONLY,
       location: DataTypes.INTEGER,
-      is_verified: { type: DataTypes.BOOLEAN, defaultValue: 0 },
+      is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
       sequelize,

@@ -15,7 +15,8 @@ const router = require("./route/index");
 app.use(`/events`, router.eventRouter);
 app.use(`/users`, router.userRouter);
 app.use(`/reviews`, router.reviewRouter);
-// app.use(`/discussions`, router.discussionRouter);
+app.use(`/discussions`, router.discussionRouter);
+app.use(`/discussion_replies`, router.disc_repRouter);
 
 app.listen(PORT, () => {
   console.log(`server is online on PORT ${PORT}`);
