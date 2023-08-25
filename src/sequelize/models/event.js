@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Event.init(
     {
-      id: DataTypes.INTEGER,
       name: DataTypes.STRING,
       location: DataTypes.INTEGER,
       venue: DataTypes.STRING,
@@ -32,8 +31,6 @@ module.exports = (sequelize, DataTypes) => {
       event_creator_userid: DataTypes.INTEGER,
       isfree: DataTypes.BOOLEAN,
       is_sponsored: DataTypes.BOOLEAN,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,

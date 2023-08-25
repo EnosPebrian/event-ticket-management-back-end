@@ -1,10 +1,15 @@
-const userRouter = require("../controller/userController");
-const route = require("express").Router();
+const userController = require(`../controller/userController`);
+const route = require(`express`).Router();
 
-route.get(`/all_user`, userRouter.getAll);
-route.get(`/query`);
-route.get(`/:id`, userRouter.getById);
-route.patch("/:id", userRouter.update);
-route.delete("/:id", userRouter.deleteOne);
+route.get(`/`, userController.getAll.bind(userController));
+route.get(`/:id`, userController.getById.bind(userController));
+route.post(`/`, userController.create.bind(userController));
+
+route.patch(
+  `/:id`,
+  userController.update.bind(userController),
+  userController.getById.bind(userController)
+);
+route.delete(`/:id`, userController.delete.bind(userController));
 
 module.exports = route;

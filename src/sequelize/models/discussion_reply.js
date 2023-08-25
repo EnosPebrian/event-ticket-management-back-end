@@ -13,13 +13,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   Discussion_reply.init(
     {
-      id: DataTypes.INTEGER,
       eventid: DataTypes.INTEGER,
       userid: DataTypes.INTEGER,
       discussion_id: DataTypes.INTEGER,
       reply_text: DataTypes.STRING,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,

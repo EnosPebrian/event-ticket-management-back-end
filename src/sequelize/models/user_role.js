@@ -13,10 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   user_role.init(
     {
-      id: DataTypes.INTEGER,
       role_name: DataTypes.STRING,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,

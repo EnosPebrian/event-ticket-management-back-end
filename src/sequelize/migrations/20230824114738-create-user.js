@@ -38,6 +38,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: { model: { tableName: `locations` }, key: "id" },
       },
+      is_verified: {
+        type: Sequelize.BOOLEAN,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

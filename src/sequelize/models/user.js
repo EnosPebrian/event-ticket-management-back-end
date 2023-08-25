@@ -13,18 +13,16 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
-      id: DataTypes.INTEGER,
-      email: DataTypes.STRING,
+      email: { type: DataTypes.STRING, unique: true },
       password: DataTypes.STRING,
       username: DataTypes.STRING,
       bio: DataTypes.STRING,
       points: DataTypes.INTEGER,
-      referralcode: DataTypes.STRING,
+      referralcode: { type: DataTypes.STRING, unique: true },
       role: DataTypes.STRING,
       birthdate: DataTypes.DATEONLY,
       location: DataTypes.INTEGER,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
+      is_verified: { type: DataTypes.BOOLEAN, defaultValue: 0 },
     },
     {
       sequelize,

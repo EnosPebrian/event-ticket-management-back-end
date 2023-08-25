@@ -13,10 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Location.init(
     {
-      id: DataTypes.INTEGER,
       location_name: DataTypes.STRING,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,

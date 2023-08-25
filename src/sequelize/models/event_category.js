@@ -13,10 +13,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   event_category.init(
     {
-      id: DataTypes.INTEGER,
       category: DataTypes.STRING,
       createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,

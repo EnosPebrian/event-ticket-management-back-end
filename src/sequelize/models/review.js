@@ -13,14 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Review.init(
     {
-      id: DataTypes.INTEGER,
       eventid: DataTypes.INTEGER,
       userid: DataTypes.INTEGER,
       ratings: DataTypes.INTEGER,
       ticketcode: DataTypes.STRING,
       comments: DataTypes.TEXT,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
+      show_name: DataTypes.BOOLEAN,
     },
     {
       sequelize,

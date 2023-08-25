@@ -13,14 +13,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Ticket.init(
     {
-      id: DataTypes.INTEGER,
       userid: DataTypes.INTEGER,
       eventid: DataTypes.INTEGER,
       ticketcode: DataTypes.STRING,
       ticket_category: DataTypes.INTEGER,
       ticket_price: DataTypes.INTEGER,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,

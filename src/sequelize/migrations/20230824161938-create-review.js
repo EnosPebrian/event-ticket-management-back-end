@@ -28,6 +28,9 @@ module.exports = {
       comments: {
         type: Sequelize.TEXT,
       },
+      show_name: {
+        type: Sequelize.BOOLEAN,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

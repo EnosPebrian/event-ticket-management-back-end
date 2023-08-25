@@ -1,17 +1,10 @@
-const db = require("../db/dbConfiguration");
+const db = require("../sequelize/models");
+const Controller = require("./Controller");
 
-const controller = require("./baseController");
-controller.table = "users";
+class UserController extends Controller {
+  constructor(modelname) {
+    super(modelname);
+  }
+}
 
-const getAll = controller.getAll;
-const update = controller.update;
-const getById = controller.getById;
-const deleteOne = controller.delete;
-const getByQuery = (req, res) => {};
-
-module.exports = {
-  getAll,
-  update,
-  getById,
-  deleteOne,
-};
+module.exports = new UserController(`User`);

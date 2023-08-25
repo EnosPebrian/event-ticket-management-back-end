@@ -1,17 +1,10 @@
-const db = require("../db/dbConfiguration");
+const db = require("../sequelize/models");
+const Controller = require("./Controller");
 
-const controller = require("./baseController");
-controller.table = "events";
+class EventController extends Controller {
+  constructor(modelname) {
+    super(modelname);
+  }
+}
 
-const getAllEvents = controller.getAll;
-const update = controller.update;
-const getById = controller.getById;
-const deleteOne = controller.delete;
-const getByQuery = (req, res) => {};
-
-module.exports = {
-  getAllEvents,
-  update,
-  getById,
-  deleteOne,
-};
+module.exports = new EventController(`Event`);
