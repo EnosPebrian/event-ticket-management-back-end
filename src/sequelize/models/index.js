@@ -55,4 +55,6 @@ db.Location = require("./location")(sequelize, Sequelize);
 db.Ticket = require("./ticket")(sequelize, Sequelize);
 db.Photo_event = require("./photo_event")(sequelize, Sequelize);
 
+db.Event.hasMany(db.Photo_event);
+
 module.exports = db;

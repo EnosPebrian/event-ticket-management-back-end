@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    await queryInterface.bulkInsert(`photo_event`, [
+    await queryInterface.bulkInsert(`photo_events`, [
       {
         id: 1,
         eventid: 1,
