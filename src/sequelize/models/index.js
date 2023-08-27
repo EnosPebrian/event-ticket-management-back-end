@@ -54,7 +54,41 @@ db.Discussion_reply = require("./discussion_reply")(sequelize, Sequelize);
 db.Location = require("./location")(sequelize, Sequelize);
 db.Ticket = require("./ticket")(sequelize, Sequelize);
 db.Photo_event = require("./photo_event")(sequelize, Sequelize);
+db.Event_category = require("./event_category")(sequelize, Sequelize);
 
-db.Event.hasMany(db.Photo_event);
+db.Event.hasMany(db.Photo_event, {
+  as: "Photo_event",
+});
+db.Event.belongsTo(db.Event_category, {
+  foreignKey: "category",
+  targetKey: "id",
+});
+
+db.Event.belongsTo(db.Location, {
+  foreignKey: "location",
+  targetKey: "id",
+  as: "Location",
+});
+
+db.User.hasMany(db.Discussion, { targetKey: "userid" });
+db.Discussion.belongsTo(db.User, { targetKey: "id" });
+db.User.hasMany(db.Review, { targetKey: "userid" });
+db.Review.belongsTo(db.User, { targetKey: "id" });
+db.User.hasMany(db.Discussion_reply, { targetKey: "userid" });
+db.Discussion_reply.belongsTo(db.User, { targetKey: "id" });
+db.Event.hasMany(db.Discussion, { targetKey: "eventid" });
+db.Discussion.belongsTo(db.Event, { targetKey: "id" });
+db.Event.hasMany(db.Review, { targetKey: "eventid" });
+db.Review.belongsTo(db.Event, { targetKey: "id" });
+db.Event.hasMany(db.Discussion_reply, { targetKey: "eventid" });
+db.Discussion_reply.belongsTo(db.Event, { targetKey: "id" });
+db.Location.hasMany(db.Event, {
+  foreignKey: "location",
+});
+db.Event.belongsTo(db.Location, { foreignKey: "location" });
+db.Event_category.hasMany(db.Event, {
+  foreignKey: "category",
+});
+db.Event.belongsTo(db.Event_category, { foreignKey: "category" });
 
 module.exports = db;

@@ -17,6 +17,8 @@ app.use(`/users`, router.userRouter);
 app.use(`/reviews`, router.reviewRouter);
 app.use(`/discussions`, router.discussionRouter);
 app.use(`/discussion_replies`, router.disc_repRouter);
+app.use(`/locations`, router.locationRouter);
+app.use(`/event_categories`, router.eventCategoryRouter);
 
 app.listen(PORT, () => {
   console.log(`server is online on PORT ${PORT}`);
