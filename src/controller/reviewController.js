@@ -16,7 +16,13 @@ class ReviewController extends Controller {
         offset: (page ? page - 1 : 0) * limit,
         include: [{ model: db.User, attributes: ["username"] }],
       })
-      .then((result) => res.send(result))
+      .then((result) => {
+        const number_of_pages = Math.ceil(result.count / limit);
+        return res.send({
+          number_of_pages: number_of_pages,
+          data: result.rows,
+        });
+      })
       .catch((err) => res.status(400).send(err?.message));
   }
 }

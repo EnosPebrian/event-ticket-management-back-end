@@ -4,7 +4,6 @@ const route = require(`express`).Router();
 route.get(`/`, disc_repController.getAll.bind(disc_repController));
 route.get(`/:id`, disc_repController.getById.bind(disc_repController));
 route.post(`/`, disc_repController.create.bind(disc_repController));
-
 route.patch(
   `/:id`,
   disc_repController.update.bind(disc_repController),

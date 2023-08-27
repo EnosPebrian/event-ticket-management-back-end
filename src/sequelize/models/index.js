@@ -70,18 +70,18 @@ db.Event.belongsTo(db.Location, {
   as: "Location",
 });
 
-db.User.hasMany(db.Discussion, { targetKey: "userid" });
-db.Discussion.belongsTo(db.User, { targetKey: "id" });
-db.User.hasMany(db.Review, { targetKey: "userid" });
-db.Review.belongsTo(db.User, { targetKey: "id" });
-db.User.hasMany(db.Discussion_reply, { targetKey: "userid" });
-db.Discussion_reply.belongsTo(db.User, { targetKey: "id" });
-db.Event.hasMany(db.Discussion, { targetKey: "eventid" });
-db.Discussion.belongsTo(db.Event, { targetKey: "id" });
-db.Event.hasMany(db.Review, { targetKey: "eventid" });
-db.Review.belongsTo(db.Event, { targetKey: "id" });
-db.Event.hasMany(db.Discussion_reply, { targetKey: "eventid" });
-db.Discussion_reply.belongsTo(db.Event, { targetKey: "id" });
+db.User.hasMany(db.Discussion, { foreignKey: "userid" });
+db.Discussion.belongsTo(db.User, { foreignKey: "userid" });
+db.User.hasMany(db.Review, { foreignKey: "userid" });
+db.Review.belongsTo(db.User, { foreignKey: "userid" });
+db.User.hasMany(db.Discussion_reply, { foreignKey: "userid" });
+db.Discussion_reply.belongsTo(db.User, { foreignKey: "userid" });
+db.Event.hasMany(db.Discussion, { foreignKey: "eventid" });
+db.Discussion.belongsTo(db.Event, { foreignKey: "eventid" });
+db.Event.hasMany(db.Review, { foreignKey: "eventid" });
+db.Review.belongsTo(db.Event, { foreignKey: "eventid" });
+db.Event.hasMany(db.Discussion_reply, { foreignKey: "eventid" });
+db.Discussion_reply.belongsTo(db.Event, { foreignKey: "eventid" });
 db.Location.hasMany(db.Event, {
   foreignKey: "location",
 });
@@ -90,5 +90,13 @@ db.Event_category.hasMany(db.Event, {
   foreignKey: "category",
 });
 db.Event.belongsTo(db.Event_category, { foreignKey: "category" });
+db.Discussion.hasMany(db.Discussion_reply, {
+  as: "Discussion_reply",
+  foreignKey: "discussion_id",
+});
+db.Discussion_reply.belongsTo(db.Discussion, {
+  as: "Discussion",
+  foreignKey: "discussion_id",
+});
 
 module.exports = db;

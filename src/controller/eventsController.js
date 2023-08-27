@@ -8,6 +8,7 @@ class EventController extends Controller {
   }
   async getByQuery(req, res) {
     const {
+      id,
       name,
       location,
       category,
@@ -17,6 +18,7 @@ class EventController extends Controller {
       page,
       limit,
       order_by,
+      is_sponsored,
     } = req.query;
     console.log(order_by);
     const queryString = {
@@ -43,6 +45,7 @@ class EventController extends Controller {
         ],
       },
       where: {
+        ...(id && { id: id }),
         ...(name && {
           [Op.or]: [
             { name: { [Op.like]: `%${name}%` } },
@@ -66,6 +69,7 @@ class EventController extends Controller {
         ...(typeof category === "object" && {
           "$Event_category.category$": { [Op.in]: category },
         }),
+        ...(is_sponsored && { is_sponsored: true }),
         ...(date_start && { date_start: { [Op.gte]: date_start } }),
         ...(!date_start &&
           !completed_event && { date_start: { [Op.gte]: new Date() } }),

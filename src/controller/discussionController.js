@@ -12,12 +12,26 @@ class DiscussionController extends Controller {
     const limit = 15;
     this.db
       .findAndCountAll({
+        attributes: ["id", "question_text", "eventid"],
         where: { eventid },
         limit: limit,
         offset: (page ? page - 1 : 0) * limit,
-        include: [{ model: db.User, attribute: ["username"] }],
+        include: [
+          { model: db.User, attributes: ["username"] },
+          {
+            model: db.Discussion_reply,
+            as: "Discussion_reply",
+            attributes: ["reply_text"],
+            include: [{ model: db.User, attributes: ["username"] }],
+          },
+        ],
       })
-      .then((result) => res.send(result))
+      .then((result) =>
+        res.send({
+          number_of_pages: Math.ceil(result.count / limit),
+          data: result.rows,
+        })
+      )
       .catch((err) => res.status(400).send(err?.message));
   }
 }
