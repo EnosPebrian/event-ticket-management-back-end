@@ -98,5 +98,19 @@ db.Discussion_reply.belongsTo(db.Discussion, {
   as: "Discussion",
   foreignKey: "discussion_id",
 });
+db.User.hasMany(db.Event, { foreignKey: "event_creator_userid" });
+db.Event.belongsTo(db.User, { foreignKey: "event_creator_userid" });
+db.User.hasMany(db.Ticket, { foreignKey: "userid" });
+db.Ticket.belongsTo(db.User, { foreignKey: "userid" });
+db.Event.hasMany(db.Ticket, { foreignKey: "eventid" });
+db.Ticket.belongsTo(db.Event, { foreignKey: "eventid" });
+db.Ticket.hasOne(db.Review, {
+  foreignKey: "ticketcode",
+  sourceKey: "ticketcode",
+});
+db.Review.belongsTo(db.Ticket, {
+  foreignKey: "ticketcode",
+  sourceKey: "ticketcode",
+});
 
 module.exports = db;

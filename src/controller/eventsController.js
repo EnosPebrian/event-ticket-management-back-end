@@ -19,8 +19,8 @@ class EventController extends Controller {
       limit,
       order_by,
       is_sponsored,
+      event_creator_userid,
     } = req.query;
-    console.log(order_by);
     const queryString = {
       attributes: {
         include: [
@@ -76,6 +76,9 @@ class EventController extends Controller {
         ...(!date_start &&
           completed_event && { date_start: { [Op.gte]: "2023-01-01" } }),
         ...(date_end && { date_end: { [Op.lte]: date_end } }),
+        ...(event_creator_userid && {
+          event_creator_userid: event_creator_userid,
+        }),
       },
       include: [
         {
@@ -95,6 +98,12 @@ class EventController extends Controller {
           as: "Location",
           required: true,
           attributes: ["location_name"],
+        },
+        {
+          model: db.User,
+          as: "User",
+          required: true,
+          attributes: ["username"],
         },
       ],
       ...(typeof order_by === "object" && {
