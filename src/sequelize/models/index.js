@@ -58,6 +58,7 @@ db.Event_category = require("./event_category")(sequelize, Sequelize);
 
 db.Event.hasMany(db.Photo_event, {
   as: "Photo_event",
+  onDelete: "cascade",
 });
 db.Event.belongsTo(db.Event_category, {
   foreignKey: "category",
@@ -76,11 +77,14 @@ db.User.hasMany(db.Review, { foreignKey: "userid" });
 db.Review.belongsTo(db.User, { foreignKey: "userid" });
 db.User.hasMany(db.Discussion_reply, { foreignKey: "userid" });
 db.Discussion_reply.belongsTo(db.User, { foreignKey: "userid" });
-db.Event.hasMany(db.Discussion, { foreignKey: "eventid" });
+db.Event.hasMany(db.Discussion, { foreignKey: "eventid", onDelete: "cascade" });
 db.Discussion.belongsTo(db.Event, { foreignKey: "eventid" });
-db.Event.hasMany(db.Review, { foreignKey: "eventid" });
+db.Event.hasMany(db.Review, { foreignKey: "eventid", onDelete: "cascade" });
 db.Review.belongsTo(db.Event, { foreignKey: "eventid" });
-db.Event.hasMany(db.Discussion_reply, { foreignKey: "eventid" });
+db.Event.hasMany(db.Discussion_reply, {
+  foreignKey: "eventid",
+  onDelete: "cascade",
+});
 db.Discussion_reply.belongsTo(db.Event, { foreignKey: "eventid" });
 db.Location.hasMany(db.Event, {
   foreignKey: "location",
@@ -102,7 +106,7 @@ db.User.hasMany(db.Event, { foreignKey: "event_creator_userid" });
 db.Event.belongsTo(db.User, { foreignKey: "event_creator_userid" });
 db.User.hasMany(db.Ticket, { foreignKey: "userid" });
 db.Ticket.belongsTo(db.User, { foreignKey: "userid" });
-db.Event.hasMany(db.Ticket, { foreignKey: "eventid" });
+db.Event.hasMany(db.Ticket, { foreignKey: "eventid", onDelete: "cascade" });
 db.Ticket.belongsTo(db.Event, { foreignKey: "eventid" });
 db.Ticket.hasOne(db.Review, {
   foreignKey: "ticketcode",

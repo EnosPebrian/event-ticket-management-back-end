@@ -16,6 +16,7 @@ module.exports = {
       eventid: {
         type: Sequelize.INTEGER,
         references: { model: { tableName: `events`, key: `id` } },
+        onDelete: "cascade",
       },
       ticketcode: {
         type: Sequelize.STRING,

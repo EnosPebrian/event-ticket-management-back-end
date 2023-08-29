@@ -20,6 +20,7 @@ app.use(`/discussion_replies`, router.disc_repRouter);
 app.use(`/locations`, router.locationRouter);
 app.use(`/event_categories`, router.eventCategoryRouter);
 app.use(`/tickets`, router.ticketRouter);
+app.use(`/photo_events`, router.photo_eventRouter);
 
 app.listen(PORT, () => {
   console.log(`server is online on PORT ${PORT}`);

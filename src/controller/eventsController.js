@@ -85,7 +85,7 @@ class EventController extends Controller {
           model: db.Photo_event,
           as: "Photo_event",
           required: true,
-          attributes: ["url"],
+          attributes: ["url", "id"],
         },
         {
           model: db.Event_category,

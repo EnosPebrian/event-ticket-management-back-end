@@ -30,6 +30,19 @@ class CategoryController extends Controller {
       })
       .catch((err) => res.status(400).send(err?.message));
   }
+  getCategoryByQuery(req, res) {
+    const { category } = req.query;
+    this.db
+      .findAll({
+        where: {
+          ...(category && {
+            category: { [Op.like]: `%${category}%` },
+          }),
+        },
+      })
+      .then((result) => res.send(result))
+      .catch((err) => res.status(400).send(err?.message));
+  }
 }
 
 module.exports = new CategoryController(`Event_category`);

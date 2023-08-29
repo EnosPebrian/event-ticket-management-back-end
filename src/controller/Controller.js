@@ -35,7 +35,7 @@ class Controller {
     const { id } = req.params;
     this.db
       .destroy({ where: { id } })
-      .then(() => res.send({ message: `${modelname} deleted` }))
+      .then(() => res.send({ message: `${this.modelname} deleted` }))
       .catch((err) => res.status(500).send(err?.message));
   }
 }

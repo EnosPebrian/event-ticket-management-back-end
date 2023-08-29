@@ -4,8 +4,9 @@ const reviewRouter = require("./review_router");
 const discussionRouter = require("./discussion_router");
 const disc_repRouter = require("./discussion_reply_router");
 const locationRouter = require("./location_router");
-const eventCategoryRouter = require(`./Event_category_controller`);
+const eventCategoryRouter = require(`./Event_category_router`);
 const ticketRouter = require("./ticket_router");
+const photo_eventRouter = require("./photo_event");
 
 module.exports = {
   eventRouter: eventRouter,
@@ -16,4 +17,5 @@ module.exports = {
   locationRouter: locationRouter,
   eventCategoryRouter: eventCategoryRouter,
   ticketRouter: ticketRouter,
+  photo_eventRouter: photo_eventRouter,
 };
