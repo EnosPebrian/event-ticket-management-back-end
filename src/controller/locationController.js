@@ -30,6 +30,21 @@ class ReviewController extends Controller {
       })
       .catch((err) => res.status(400).send(err?.message));
   }
+
+  getLocationByQuery(req, res) {
+    const { location_name } = req.query;
+    this.db
+      .findAll({
+        where: {
+          ...(location_name && {
+            location_name: { [Op.like]: `%${location_name}%` },
+          }),
+        },
+        limit: 10,
+      })
+      .then((result) => res.send(result))
+      .catch((err) => res.status(400).send(err?.message));
+  }
 }
 
 module.exports = new ReviewController(`Location`);
