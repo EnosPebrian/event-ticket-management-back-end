@@ -4,6 +4,8 @@ const route = require(`express`).Router();
 route.get(`/`, userController.getAll.bind(userController));
 route.get(`/:id`, userController.getById.bind(userController));
 route.post(`/`, userController.create.bind(userController));
+route.post(`/new_account`, userController.register.bind(userController));
+route.post(`/auth`, userController.login.bind(userController));
 
 route.patch(
   `/:id`,

@@ -1,4 +1,5 @@
 "use strict";
+const bcrypt = require("bcrypt");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -17,7 +18,7 @@ module.exports = {
       {
         id: 1,
         email: "admin@mail.com",
-        password: "admin123",
+        password: await bcrypt.hash("admin123", 13),
         username: "Admin",
         bio: "",
         points: 61000,
@@ -31,7 +32,7 @@ module.exports = {
       {
         id: 2,
         email: "blank@mail.com",
-        password: "blank123",
+        password: await bcrypt.hash("blank123", 13),
         username: "Blank",
         bio: "",
         points: 0,
@@ -45,7 +46,7 @@ module.exports = {
       {
         id: 3,
         email: "adam@mail.com",
-        password: "adamair",
+        password: await bcrypt.hash("adamair", 13),
         username: "adam",
         bio: "",
         points: 124999998,
@@ -59,7 +60,7 @@ module.exports = {
       {
         id: 4,
         email: "andre@mail.com",
-        password: "andre",
+        password: await bcrypt.hash("andre", 13),
         username: "andre",
         bio: "",
         points: 0,
@@ -73,7 +74,7 @@ module.exports = {
       {
         id: 5,
         email: "ari@mail.com",
-        password: "ari",
+        password: await bcrypt.hash("ari", 13),
         username: "ari",
         bio: "",
         points: 1000000,
@@ -87,7 +88,7 @@ module.exports = {
       {
         id: 6,
         email: "aaron@mail.com",
-        password: "aaron",
+        password: await bcrypt.hash("aaron", 13),
         username: "Aaron",
         bio: "",
         points: 685000,
@@ -101,7 +102,7 @@ module.exports = {
       {
         id: 7,
         email: "mamaron@mail.com",
-        password: "Mamaron",
+        password: await bcrypt.hash("Mamaron", 13),
         username: "Mamaron",
         bio: "",
         points: 0,
@@ -115,7 +116,7 @@ module.exports = {
       {
         id: 8,
         email: "kakaron@mail.com",
-        password: "Kakaron",
+        password: await bcrypt.hash("Kakaron", 13),
         username: "Kakaron",
         bio: "",
         points: 0,
@@ -129,7 +130,7 @@ module.exports = {
       {
         id: 9,
         email: "paparon@mail.com",
-        password: "Paparon",
+        password: await bcrypt.hash("Paparon", 13),
         username: "Paparon",
         bio: "",
         points: 0,
@@ -143,7 +144,7 @@ module.exports = {
       {
         id: 10,
         email: "bibiron@mail.com",
-        password: "Bibiron",
+        password: await bcrypt.hash("Bibiron", 13),
         username: "Bibiron",
         bio: "",
         points: 0,
@@ -157,7 +158,7 @@ module.exports = {
       {
         id: 11,
         email: "vegetta@mail.com",
-        password: "Vegetta",
+        password: await bcrypt.hash("Vegetta", 13),
         username: "Vegetta",
         bio: "",
         points: 20000,
@@ -171,7 +172,7 @@ module.exports = {
       {
         id: 12,
         email: "saintsaturn@mail.com",
-        password: "Saintsaturn",
+        password: await bcrypt.hash("Saintsaturn", 13),
         username: "Saint Saturn",
         bio: "",
         points: 0,
@@ -185,7 +186,7 @@ module.exports = {
       {
         id: 13,
         email: "zoro@mail.com",
-        password: "Zoro",
+        password: await bcrypt.hash("Zoro", 13),
         username: "Zoro",
         bio: "",
         points: 0,
@@ -199,7 +200,7 @@ module.exports = {
       {
         id: 15,
         email: "almandine@mail.com",
-        password: "almandine",
+        password: await bcrypt.hash("almandine", 13),
         username: "almandine",
         bio: "",
         points: 0,
@@ -213,7 +214,7 @@ module.exports = {
       {
         id: 16,
         email: "age123@mail.com",
-        password: "age12345",
+        password: await bcrypt.hash("age12345", 13),
         username: "age",
         bio: "",
         points: 0,
@@ -227,7 +228,7 @@ module.exports = {
       {
         id: 17,
         email: "pyrope@mail.com",
-        password: "pyrope",
+        password: await bcrypt.hash("pyrope", 13),
         username: "pyrope",
         bio: "",
         points: 20000,
@@ -241,7 +242,7 @@ module.exports = {
       {
         id: 18,
         email: "garnet@gmail.com",
-        password: "garnet",
+        password: await bcrypt.hash("garnet", 13),
         username: "garnet",
         bio: "",
         points: 0,
@@ -255,7 +256,7 @@ module.exports = {
       {
         id: 19,
         email: "alakazam@mail.com",
-        password: "alakazam",
+        password: await bcrypt.hash("alakazam", 13),
         username: "Alakazam",
         bio: "",
         points: 40000,
@@ -269,7 +270,7 @@ module.exports = {
       {
         id: 20,
         email: "aneh@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 13),
         username: "aneh",
         bio: "",
         points: 20000,
@@ -283,7 +284,7 @@ module.exports = {
       {
         id: 21,
         email: "admin12@mail.com",
-        password: "admin123",
+        password: await bcrypt.hash("admin123", 13),
         username: "admin",
         bio: "",
         points: 9862000,
@@ -297,7 +298,7 @@ module.exports = {
       {
         id: 22,
         email: "aaaa@mail",
-        password: "123",
+        password: await bcrypt.hash("123", 13),
         username: "aaaa",
         bio: "",
         points: 20000,
@@ -311,7 +312,7 @@ module.exports = {
       {
         id: 23,
         email: "udin@mail.com",
-        password: "udin",
+        password: await bcrypt.hash("udin", 13),
         username: "udin",
         bio: "",
         points: 0,
