@@ -149,6 +149,46 @@ class EventController extends Controller {
       })
       .catch((err) => res.status(500).send(err?.message));
   }
+  async createEvent(req, res) {
+    try {
+      const dataEvent = {
+        name: req.body.name,
+        location: req.body.location,
+        venue: req.body.venue,
+        category: req.body.category,
+        date_start: req.body.date_start,
+        date_end: req.body.date_end,
+        time_start: req.body.time_start,
+        time_end: req.body.time_end,
+        description: req.body.description,
+        vip_ticket_price: req.body.vip_ticket_price,
+        vip_ticket_stock: req.body.vip_ticket_stock,
+        presale_ticket_price: req.body.presale_ticket_price,
+        presale_ticket_stock: req.body.name.presale_ticket_stock,
+        normal_ticket_price: req.body.normal_ticket_price,
+        normal_ticket_stock: req.body.normal_ticket_stock,
+        event_creator_userid: req.body.event_creator_userid,
+        isfree: req.body.isfree,
+        is_sponsored: req.body.is_sponsored,
+      };
+
+      const event = await db.Event.create(dataEvent);
+      const dataPhotoEvent = {
+        eventid: event.id,
+        url: req.body.url,
+      };
+
+      const photoEvent = await db.Photo_event.create(dataPhotoEvent);
+
+      res.status(200).json({
+        message: "Create event success",
+        event,
+        photoEvent,
+      });
+    } catch (err) {
+      res.status(500).send(err?.message);
+    }
+  }
 }
 
 module.exports = new EventController(`Event`);
