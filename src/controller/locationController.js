@@ -45,6 +45,7 @@ class ReviewController extends Controller {
       .then((result) => res.send(result))
       .catch((err) => res.status(400).send(err?.message));
   }
+  async getLocationForSelectLocationCreate(req, res) {}
 }
 
 module.exports = new ReviewController(`Location`);

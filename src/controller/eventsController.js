@@ -180,6 +180,13 @@ class EventController extends Controller {
 
       const photoEvent = await db.Photo_event.create(dataPhotoEvent);
 
+      // const locationEvent = await db.Location.findOne({
+      //   where: {
+      //     location_name: `%${dataEvent.location}%`,
+      //   },
+      // });
+      console.log(locationEvent.id, "INI ID LOCATION NYA");
+
       res.status(200).json({
         message: "Create event success",
         event,
