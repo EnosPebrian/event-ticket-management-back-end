@@ -41,6 +41,12 @@ module.exports = {
       is_verified: {
         type: Sequelize.BOOLEAN,
       },
+      reset_password_token: {
+        type: Sequelize.STRING,
+      },
+      verify_token: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

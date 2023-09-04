@@ -12,6 +12,7 @@ app.use(express.json());
 
 //route
 const router = require("./route/index");
+const db = require("./sequelize/models");
 app.use(`/events`, router.eventRouter);
 app.use(`/users`, router.userRouter);
 app.use(`/reviews`, router.reviewRouter);

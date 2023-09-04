@@ -30,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
       birthdate: DataTypes.DATEONLY,
       location: DataTypes.INTEGER,
       is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
+      reset_password_token: DataTypes.STRING,
+      verify_token: DataTypes.STRING,
     },
     {
       sequelize,
