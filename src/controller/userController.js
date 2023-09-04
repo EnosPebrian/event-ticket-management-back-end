@@ -108,7 +108,41 @@ class UserController extends Controller {
     }
   }
 
-  async login(req, res) {}
+  async login(req, res) {
+    const { email, password } = req.body;
+    console.log(email, password);
+    db.User.findOne({
+      where: {
+        email,
+      },
+    })
+      .then(async (result) => {
+        console.log("result", result);
+        const isValid = await bcrypt.compare(
+          password,
+          result.dataValues.password
+        );
+
+        if (!isValid) {
+          throw new Error("wrong password");
+        }
+        delete result.dataValues.password;
+
+        const payload = {
+          id: result.dataValues.id,
+          is_verified: result.dataValues.is_verified,
+        };
+
+        const token = jwt.sign(payload, process.env.jwt_secret, {
+          expiresIn: "1h",
+        });
+
+        return res.send({ token, user: result });
+      })
+      .catch((err) => {
+        res.status(500).send(err?.message);
+      });
+  }
 }
 
 module.exports = new UserController(`User`);
