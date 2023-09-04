@@ -24,7 +24,7 @@ class UserController extends Controller {
           { transaction: t }
         )
         .then((result) => {
-          if (result?.dataValues.id) throw new Error(`Email has been used`);
+          if (result) throw new Error(`Email has been used`);
         });
 
       if (reference) {
