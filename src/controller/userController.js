@@ -110,7 +110,6 @@ class UserController extends Controller {
 
   async login(req, res) {
     const { email, password } = req.body;
-    console.log(email, password);
     db.User.findOne({
       where: {
         email,
@@ -134,7 +133,7 @@ class UserController extends Controller {
         };
 
         const token = jwt.sign(payload, process.env.jwt_secret, {
-          expiresIn: "1h",
+          expiresIn: "15min",
         });
 
         return res.send({ token, user: result });
@@ -144,15 +143,42 @@ class UserController extends Controller {
       });
   }
 
+  async keepLogin(req, res) {
+    try {
+      const { token } = req.params;
+      const payload = jwt.verify(token, process.env.jwt_secret);
+      if (!payload?.id) throw new Error("invalid token");
+      const user = await this.db.findByPk(payload.id);
+      delete user.dataValues.password;
+      console.log(`1`, user.dataValues);
+      const newToken = jwt.sign(
+        {
+          id: user.dataValues.id,
+          is_verified: user.dataValues.is_verified,
+        },
+        process.env.jwt_secret,
+        { expiresIn: "15min" }
+      );
+
+      return res.send({ token: newToken, user: user.dataValues });
+    } catch (err) {
+      res.status(400).send(err?.message);
+    }
+  }
+
   async getUserByToken(req, res) {
-    const { token } = req.query;
+    try {
+      const { token } = req.query;
 
-    const payload = jwt.verify(token, process.env.jwt_secret);
+      const payload = jwt.verify(token, process.env.jwt_secret);
 
-    await this.db
-      .findByPk(payload.id)
-      .then((result) => res.send(result.dataValues))
-      .catch((err) => res.send(err));
+      await this.db
+        .findByPk(payload.id)
+        .then((result) => res.send(result.dataValues))
+        .catch((err) => res.send(err));
+    } catch (err) {
+      return res.status(400).send(err?.message);
+    }
   }
 }
 

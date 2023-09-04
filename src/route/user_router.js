@@ -18,6 +18,7 @@ route.post(
   validate,
   userController.register.bind(userController)
 );
+route.post(`/token/:token`, userController.keepLogin.bind(userController));
 route.post(
   `/new_account_verification/:id`,
   userController.sendVerification.bind(userController)
