@@ -5,7 +5,7 @@ route.get(`/`, eventsController.getAll.bind(eventsController));
 route.get(`/q`, eventsController.getByQuery.bind(eventsController));
 route.get(`/:id`, eventsController.getById.bind(eventsController));
 
-route.post(`/`, eventsController.create.bind(eventsController));
+route.post(`/create`, eventsController.createEvent.bind(eventsController));
 
 route.patch(
   `/:id`,
