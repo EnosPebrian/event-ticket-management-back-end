@@ -143,6 +143,17 @@ class UserController extends Controller {
         res.status(500).send(err?.message);
       });
   }
+
+  async getUserByToken(req, res) {
+    const { token } = req.query;
+
+    const payload = jwt.verify(token, process.env.jwt_secret);
+
+    await this.db
+      .findByPk(payload.id)
+      .then((result) => res.send(result.dataValues))
+      .catch((err) => res.send(err));
+  }
 }
 
 module.exports = new UserController(`User`);
