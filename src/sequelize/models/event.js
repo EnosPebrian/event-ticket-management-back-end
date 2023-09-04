@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       event_creator_userid: { type: DataTypes.INTEGER, allowNull: true },
       isfree: DataTypes.BOOLEAN,
       is_sponsored: { type: DataTypes.BOOLEAN, defaultValue: false },
+     
     },
     {
       sequelize,
