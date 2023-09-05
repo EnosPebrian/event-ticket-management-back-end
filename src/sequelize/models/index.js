@@ -55,11 +55,16 @@ db.Location = require("./location")(sequelize, Sequelize);
 db.Ticket = require("./ticket")(sequelize, Sequelize);
 db.Photo_event = require("./photo_event")(sequelize, Sequelize);
 db.Event_category = require("./event_category")(sequelize, Sequelize);
+db.User_role = require("./user_role")(sequelize, Sequelize);
+db.Ticket_category = require("./ticket_category")(sequelize, Sequelize);
 
 db.Event.hasMany(db.Photo_event, {
+  foreignKey: "eventid",
   as: "Photo_event",
   onDelete: "cascade",
 });
+db.Photo_event.belongsTo(db.Event, { foreignKey: "eventid" });
+
 db.Event.belongsTo(db.Event_category, {
   foreignKey: "category",
   targetKey: "id",
@@ -116,5 +121,10 @@ db.Review.belongsTo(db.Ticket, {
   foreignKey: "ticketcode",
   sourceKey: "ticketcode",
 });
+
+db.User_role.hasMany(db.User, { foreignKey: "role" });
+db.User.belongsTo(db.User_role, { foreignKey: "role" });
+db.Ticket_category.hasMany(db.Ticket, { foreignKey: "category" });
+db.Ticket.belongsTo(db.Ticket_category, { foreignKey: "category" });
 
 module.exports = db;

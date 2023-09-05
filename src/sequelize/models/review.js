@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       ticketcode: DataTypes.STRING,
       comments: DataTypes.TEXT,
       show_name: DataTypes.BOOLEAN,
+      createdAt: DataTypes.DATE,
     },
     {
       sequelize,

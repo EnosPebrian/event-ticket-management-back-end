@@ -93,7 +93,7 @@ class UserController extends Controller {
       const { id } = req.query;
       const user = await this.db.findByPk(id);
       const payload = jwt.verify(token, process.env.jwt_secret);
-      console.log(user.dataValues.verify_token);
+
       if (token != user.dataValues.verify_token)
         throw new Error(`Your credential does not match`);
       if (payload.is_verified)
@@ -110,13 +110,13 @@ class UserController extends Controller {
 
   async login(req, res) {
     const { email, password } = req.body;
-    db.User.findOne({
+    await db.User.findOne({
       where: {
         email,
       },
     })
       .then(async (result) => {
-        console.log("result", result);
+        if (!result) throw new Error("wrong email or password");
         const isValid = await bcrypt.compare(
           password,
           result.dataValues.password
@@ -150,7 +150,6 @@ class UserController extends Controller {
       if (!payload?.id) throw new Error("invalid token");
       const user = await this.db.findByPk(payload.id);
       delete user.dataValues.password;
-      console.log(`1`, user.dataValues);
       const newToken = jwt.sign(
         {
           id: user.dataValues.id,

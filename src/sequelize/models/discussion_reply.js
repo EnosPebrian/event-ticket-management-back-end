@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       userid: DataTypes.INTEGER,
       discussion_id: DataTypes.INTEGER,
       reply_text: DataTypes.STRING,
+      createdAt: DataTypes.DATE,
     },
     {
       sequelize,

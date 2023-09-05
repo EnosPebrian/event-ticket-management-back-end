@@ -13,7 +13,8 @@ class ReviewController extends Controller {
       .findAndCountAll({
         where: { eventid },
         limit: limit,
-        offset: (page ? page - 1 : 0) * limit,
+        offset: (page ? Number(page) - 1 : 0) * limit,
+        order: [["createdAt", "DESC"]],
         include: [{ model: db.User, attributes: ["username"] }],
       })
       .then((result) => {

@@ -185,7 +185,7 @@ class EventController extends Controller {
       //     location_name: `%${dataEvent.location}%`,
       //   },
       // });
-      console.log(locationEvent.id, "INI ID LOCATION NYA");
+      
 
       res.status(200).json({
         message: "Create event success",
