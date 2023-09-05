@@ -6,17 +6,16 @@ const fileUploader = ({
   filetype = "",
 }) => {};
 
-const blobUploader = ({filetype}) => {
+const blobUploader = ({ filetype }) => {
   return multer({
     fileFilter: (req, file, cb) => {
-      if (file.mimetype.split('/')[0] != filetype) {
-        return(cb(null, false))
+      if (file.mimetype.split("/")[0] != filetype) {
+        return cb(null, false);
       }
-      return cb(null, true)
+      return cb(null, true);
     },
-    limits: 100000
-  })
-}
+    limits: 100000,
+  });
+};
 
-
-module.exports = {blobUploader}
+module.exports = { blobUploader };

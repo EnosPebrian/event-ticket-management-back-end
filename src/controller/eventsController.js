@@ -158,7 +158,7 @@ class EventController extends Controller {
         category: req.body.category,
         date_start: req.body.date_start,
         date_end: req.body.date_end,
-        time_start: req.body.time_start,
+        time_start: req.body.date_start,
         time_end: req.body.time_end,
         description: req.body.description,
         vip_ticket_price: req.body.vip_ticket_price,
@@ -168,30 +168,57 @@ class EventController extends Controller {
         normal_ticket_price: req.body.normal_ticket_price,
         normal_ticket_stock: req.body.normal_ticket_stock,
         event_creator_userid: req.body.event_creator_userid,
-        isfree: req.body.isfree,
-        is_sponsored: req.body.is_sponsored,
+        isfree: 1,
+        is_sponsored: 1,
       };
 
-      const event = await db.Event.create(dataEvent);
-      const dataPhotoEvent = {
-        eventid: event.id,
-        url: req.body.url,
-      };
+      if (dataEvent) {
+        const locationEvent = await db.Location.findAll({
+          where: {
+            location_name: { [Op.like]: `%${req.body.location}%` },
+          },
+        })
+          .then((result) => result)
+          .catch((err) => res.status(404).send(err?.message));
 
-      const photoEvent = await db.Photo_event.create(dataPhotoEvent);
+        if (!locationEvent[0]) {
+          return res.status(404).send("Location not found");
+        }
+        // console.log(locationEvent[0].dataValues.id);
 
-      // const locationEvent = await db.Location.findOne({
-      //   where: {
-      //     location_name: `%${dataEvent.location}%`,
-      //   },
-      // });
-      
+        const categoryEvent = await db.Event_category.findAll({
+          where: {
+            category: {
+              [Op.like]: `%${req.body.category}%`,
+            },
+          },
+        });
+        if (!categoryEvent[0]) {
+          return res.status(404).send("Category not found");
+        }
+        // console.log(categoryEvent[0].dataValues.id);
 
-      res.status(200).json({
-        message: "Create event success",
-        event,
-        photoEvent,
-      });
+        const dataCreate = { ...dataEvent };
+        if (
+          dataCreate.normal_ticket_price ||
+          dataCreate.vip_ticket_price ||
+          dataCreate.presale_ticket_price
+        ) {
+          dataCreate.isfree = 0;
+          dataCreate.is_sponsored = 0;
+        }
+        dataCreate.location = locationEvent[0].dataValues.id;
+        dataCreate.category = categoryEvent[0].dataValues.id;
+
+        console.log(dataCreate);
+        const createEvent = await db.Event.create();
+
+        res.status(200).json({
+          message: "Create event success",
+          // event,
+          // locationEvent,
+        });
+      }
     } catch (err) {
       res.status(500).send(err?.message);
     }
