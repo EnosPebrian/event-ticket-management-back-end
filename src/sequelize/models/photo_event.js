@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       eventid: DataTypes.INTEGER,
       url: DataTypes.STRING,
+      image_blob: DataTypes.BLOB("long")
     },
     {
       sequelize,
