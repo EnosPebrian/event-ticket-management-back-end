@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
-
+const beareltoken = require("express-bearer-token");
 const PORT = 2444;
 
 const app = express();
@@ -9,7 +9,7 @@ const app = express();
 //middlewares
 app.use(cors());
 app.use(express.json());
-
+app.use(beareltoken());
 //route
 const router = require("./route/index");
 const db = require("./sequelize/models");

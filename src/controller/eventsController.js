@@ -1,6 +1,7 @@
 const { Op, where } = require("sequelize");
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
+const jwt = require("jsonwebtoken");
 
 class EventController extends Controller {
   constructor(modelname) {
@@ -151,25 +152,30 @@ class EventController extends Controller {
   }
   async createEvent(req, res) {
     try {
+      const { token } = req;
+      const data = jwt.verify(token, process.env.jwt_secret);
+      console.log(data.id);
       const dataEvent = {
-        name: req.body.name,
-        location: req.body.location,
-        venue: req.body.venue,
-        category: req.body.category,
-        date_start: req.body.date_start,
-        date_end: req.body.date_end,
-        time_start: req.body.date_start,
-        time_end: req.body.time_end,
-        description: req.body.description,
-        vip_ticket_price: req.body.vip_ticket_price,
-        vip_ticket_stock: req.body.vip_ticket_stock,
-        presale_ticket_price: req.body.presale_ticket_price,
-        presale_ticket_stock: req.body.name.presale_ticket_stock,
-        normal_ticket_price: req.body.normal_ticket_price,
-        normal_ticket_stock: req.body.normal_ticket_stock,
-        event_creator_userid: req.body.event_creator_userid,
-        isfree: 1,
-        is_sponsored: 1,
+        // name: req.body.name,
+        // location: req.body.location,
+        // venue: req.body.venue,
+        // category: req.body.category,
+        // date_start: req.body.date_start,
+        // date_end: req.body.date_end,
+        // time_start: req.body.date_start,
+        // time_end: req.body.time_end,
+        // description: req.body.description,
+        // vip_ticket_price: req.body.vip_ticket_price,
+        // vip_ticket_stock: req.body.vip_ticket_stock,
+        // presale_ticket_price: req.body.presale_ticket_price,
+        // presale_ticket_stock: req.body.name.presale_ticket_stock,
+        // normal_ticket_price: req.body.normal_ticket_price,
+        // normal_ticket_stock: req.body.normal_ticket_stock,
+        // event_creator_userid: data.id,
+        // isfree: 1,
+        // is_sponsored: 1,
+        ...req.body,
+        event_creator_userid: data.id,
       };
 
       if (dataEvent) {
