@@ -153,11 +153,11 @@ class EventController extends Controller {
   async createEvent(req, res) {
     try {
       const { token } = req;
-      const data = jwt.verify(token, process.env.jwt_secret);
-      console.log(data.id);
+      const dataIdToken = jwt.verify(token, process.env.jwt_secret);
+      // console.log(data.id);
       const dataEvent = {
         // name: req.body.name,
-        // location: req.body.location,
+
         // venue: req.body.venue,
         // category: req.body.category,
         // date_start: req.body.date_start,
@@ -175,22 +175,45 @@ class EventController extends Controller {
         // isfree: 1,
         // is_sponsored: 1,
         ...req.body,
-        event_creator_userid: data.id,
+
+        event_creator_userid: dataIdToken.id,
+        isfree: 1,
+        is_sponsored: 1,
       };
 
       if (dataEvent) {
-        const locationEvent = await db.Location.findAll({
-          where: {
-            location_name: { [Op.like]: `%${req.body.location}%` },
-          },
-        })
-          .then((result) => result)
-          .catch((err) => res.status(404).send(err?.message));
+        const checkVerifyedUser = await db.User.findByPk(dataIdToken.id).then(
+          (result) => result
+        ); // check veryfied
 
-        if (!locationEvent[0]) {
-          return res.status(404).send("Location not found");
+        console.log(checkVerifyedUser.dataValues.is_verified);
+        if (
+          checkVerifyedUser.dataValues.is_verified == null ||
+          checkVerifyedUser.dataValues.is_verified == 0
+        ) {
+          return res.send("Silahkan verifikasi akun anda dulu");
         }
-        // console.log(locationEvent[0].dataValues.id);
+
+        // fetch location
+        const locationInput = req.body.location ? req.body.location : "";
+        console.log(locationInput);
+        if (locationInput !== "") {
+          const locationEvent = await db.Location.findAll({
+            where: {
+              location_name: {
+                [Op.like]: `%${locationInput}%`,
+              },
+            },
+          })
+            .then((result) => result)
+            .catch((err) => res.status(404).send(err?.message));
+
+          if (!locationEvent[0] || locationEvent.length === 0) {
+            return res.status(404).send("Lokasi atau input salah");
+          }
+        } else {
+          return res.send("Lokasi atau input salah");
+        }
 
         const categoryEvent = await db.Event_category.findAll({
           where: {
@@ -198,7 +221,8 @@ class EventController extends Controller {
               [Op.like]: `%${req.body.category}%`,
             },
           },
-        });
+        }); // fetch category event
+
         if (!categoryEvent[0]) {
           return res.status(404).send("Category not found");
         }
@@ -216,13 +240,14 @@ class EventController extends Controller {
         dataCreate.location = locationEvent[0].dataValues.id;
         dataCreate.category = categoryEvent[0].dataValues.id;
 
-        console.log(dataCreate);
-        const createEvent = await db.Event.create();
+        // console.log(dataCreate);
+        // const createEvent = await db.Event.create(dataCreate);
 
         res.status(200).json({
           message: "Create event success",
           // event,
           // locationEvent,
+          // createEvent,
         });
       }
     } catch (err) {
