@@ -196,7 +196,7 @@ class EventController extends Controller {
 
         // fetch location
         const locationInput = req.body.location ? req.body.location : "";
-        console.log(locationInput);
+        const locationId = [];
         if (locationInput !== "") {
           const locationEvent = await db.Location.findAll({
             where: {
@@ -205,23 +205,21 @@ class EventController extends Controller {
               },
             },
           })
-            .then((result) => result)
+            .then((result) => locationId.push(result[0].dataValues))
             .catch((err) => res.status(404).send(err?.message));
-
-          if (!locationEvent[0] || locationEvent.length === 0) {
-            return res.status(404).send("Lokasi atau input salah");
-          }
-        } else {
+        }
+        if (!locationId.length) {
           return res.send("Lokasi atau input salah");
         }
 
+        // fetch category event
         const categoryEvent = await db.Event_category.findAll({
           where: {
             category: {
               [Op.like]: `%${req.body.category}%`,
             },
           },
-        }); // fetch category event
+        });
 
         if (!categoryEvent[0]) {
           return res.status(404).send("Category not found");
@@ -237,7 +235,7 @@ class EventController extends Controller {
           dataCreate.isfree = 0;
           dataCreate.is_sponsored = 0;
         }
-        dataCreate.location = locationEvent[0].dataValues.id;
+        dataCreate.location = locationId[0].id;
         dataCreate.category = categoryEvent[0].dataValues.id;
 
         // console.log(dataCreate);
@@ -248,6 +246,7 @@ class EventController extends Controller {
           // event,
           // locationEvent,
           // createEvent,
+          dataCreate,
         });
       }
     } catch (err) {
