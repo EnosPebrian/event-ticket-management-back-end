@@ -26,11 +26,6 @@ app.use(`/tickets`, router.ticketRouter);
 app.use(`/photo_events`, router.photo_eventRouter);
 app.use(`/transactions`, router.transactionRouter);
 
-app.listen(PORT, () => {
-  console.log(`server is online on PORT ${PORT}`);
-  // db.sequelize.sync({ alter: true });
-});
-
 app.get("/", (req, res) => {
   return res.send("WELCOMUNG TUTAPUNG TO MEIN API");
 });
