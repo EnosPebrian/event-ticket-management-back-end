@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const bearerToken = require("express-bearer-token");
 
 const PORT = 2444;
 
@@ -9,6 +10,7 @@ const app = express();
 //middlewares
 app.use(cors());
 app.use(express.json());
+app.use(bearerToken());
 
 //route
 const router = require("./route/index");
