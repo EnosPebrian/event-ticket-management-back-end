@@ -7,6 +7,7 @@ const locationRouter = require("./location_router");
 const eventCategoryRouter = require(`./Event_category_router`);
 const ticketRouter = require("./ticket_router");
 const photo_eventRouter = require("./photo_event");
+const transactionRouter = require("./transaction_router");
 
 module.exports = {
   eventRouter: eventRouter,
@@ -18,4 +19,5 @@ module.exports = {
   eventCategoryRouter: eventCategoryRouter,
   ticketRouter: ticketRouter,
   photo_eventRouter: photo_eventRouter,
+  transactionRouter: transactionRouter,
 };
