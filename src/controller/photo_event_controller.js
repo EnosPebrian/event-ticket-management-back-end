@@ -7,18 +7,22 @@ class Photo_eventController extends Controller {
     super(modelname);
   }
 
-  async testBlobImage(req, res) {
-    console.log(req.file);
-    console.log(req.body);
-    if (req.file) {
-      req.body.image_blob = await sharp(req.file.buffer).png().toBuffer();
-      req.body.url = req.file.originalname;
+  async addPhotoEvent(req, res) {
+    try {
+      if (req.file) {
+        req.body.image_blob = await sharp(req.file.buffer).jpeg().toBuffer();
+        req.body.url = req.file.originalname;
+      } else {
+        return res.status(500).send("Masukkan gambar dan id event");
+      }
+      db.Photo_event.update(req.body, {
+        where: { id: req.body.id },
+      });
+    } catch (err) {
+      res.status(500).send(err?.message);
     }
-    db.Photo_event.update(req.body, {
-      where: { id: req.body.id },
-    });
 
-    res.send("testing ok");
+    res.send("Gambar berhasil di upload");
   }
 }
 

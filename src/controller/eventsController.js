@@ -1,6 +1,7 @@
 const { Op, where } = require("sequelize");
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
+const jwt = require("jsonwebtoken");
 
 class EventController extends Controller {
   constructor(modelname) {
@@ -151,47 +152,103 @@ class EventController extends Controller {
   }
   async createEvent(req, res) {
     try {
+      const { token } = req;
+      const dataIdToken = jwt.verify(token, process.env.jwt_secret);
+      // console.log(data.id);
       const dataEvent = {
-        name: req.body.name,
-        location: req.body.location,
-        venue: req.body.venue,
-        category: req.body.category,
-        date_start: req.body.date_start,
-        date_end: req.body.date_end,
-        time_start: req.body.time_start,
-        time_end: req.body.time_end,
-        description: req.body.description,
-        vip_ticket_price: req.body.vip_ticket_price,
-        vip_ticket_stock: req.body.vip_ticket_stock,
-        presale_ticket_price: req.body.presale_ticket_price,
-        presale_ticket_stock: req.body.name.presale_ticket_stock,
-        normal_ticket_price: req.body.normal_ticket_price,
-        normal_ticket_stock: req.body.normal_ticket_stock,
-        event_creator_userid: req.body.event_creator_userid,
-        isfree: req.body.isfree,
-        is_sponsored: req.body.is_sponsored,
+        // name: req.body.name,
+
+        // venue: req.body.venue,
+        // category: req.body.category,
+        // date_start: req.body.date_start,
+        // date_end: req.body.date_end,
+        // time_start: req.body.date_start,
+        // time_end: req.body.time_end,
+        // description: req.body.description,
+        // vip_ticket_price: req.body.vip_ticket_price,
+        // vip_ticket_stock: req.body.vip_ticket_stock,
+        // presale_ticket_price: req.body.presale_ticket_price,
+        // presale_ticket_stock: req.body.name.presale_ticket_stock,
+        // normal_ticket_price: req.body.normal_ticket_price,
+        // normal_ticket_stock: req.body.normal_ticket_stock,
+        // event_creator_userid: data.id,
+        // isfree: 1,
+        // is_sponsored: 1,
+        ...req.body,
+
+        event_creator_userid: dataIdToken.id,
+        isfree: 1,
+        is_sponsored: 1,
       };
 
-      const event = await db.Event.create(dataEvent);
-      const dataPhotoEvent = {
-        eventid: event.id,
-        url: req.body.url,
-      };
+      if (dataEvent) {
+        const checkVerifyedUser = await db.User.findByPk(dataIdToken.id).then(
+          (result) => result
+        ); // check veryfied
 
-      const photoEvent = await db.Photo_event.create(dataPhotoEvent);
+        console.log(checkVerifyedUser.dataValues.is_verified);
+        if (
+          checkVerifyedUser.dataValues.is_verified == null ||
+          checkVerifyedUser.dataValues.is_verified == 0
+        ) {
+          return res.send("Silahkan verifikasi akun anda dulu");
+        }
 
-      // const locationEvent = await db.Location.findOne({
-      //   where: {
-      //     location_name: `%${dataEvent.location}%`,
-      //   },
-      // });
-      
+        // fetch location
+        const locationInput = req.body.location ? req.body.location : "";
+        const locationId = [];
+        if (locationInput !== "") {
+          const locationEvent = await db.Location.findAll({
+            where: {
+              location_name: {
+                [Op.like]: `%${locationInput}%`,
+              },
+            },
+          })
+            .then((result) => locationId.push(result[0].dataValues))
+            .catch((err) => res.status(404).send(err?.message));
+        }
+        if (!locationId.length) {
+          return res.send("Lokasi atau input salah");
+        }
 
-      res.status(200).json({
-        message: "Create event success",
-        event,
-        photoEvent,
-      });
+        // fetch category event
+        const categoryEvent = await db.Event_category.findAll({
+          where: {
+            category: {
+              [Op.like]: `%${req.body.category}%`,
+            },
+          },
+        });
+
+        if (!categoryEvent[0]) {
+          return res.status(404).send("Category not found");
+        }
+        // console.log(categoryEvent[0].dataValues.id);
+
+        const dataCreate = { ...dataEvent };
+        if (
+          dataCreate.normal_ticket_price ||
+          dataCreate.vip_ticket_price ||
+          dataCreate.presale_ticket_price
+        ) {
+          dataCreate.isfree = 0;
+          dataCreate.is_sponsored = 0;
+        }
+        dataCreate.location = locationId[0].id;
+        dataCreate.category = categoryEvent[0].dataValues.id;
+
+        // console.log(dataCreate);
+        // const createEvent = await db.Event.create(dataCreate);
+
+        res.status(200).json({
+          message: "Create event success",
+          // event,
+          // locationEvent,
+          // createEvent,
+          dataCreate,
+        });
+      }
     } catch (err) {
       res.status(500).send(err?.message);
     }
