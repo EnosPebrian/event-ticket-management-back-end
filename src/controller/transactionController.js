@@ -21,62 +21,131 @@ class TransactionController extends Controller {
 
   async createTransaction(req, res) {
     try {
-      const eventData = await db.Event.findByPk(req.body.event_id);
-      if (req.body.vip_ticket) {
-        const userData = await db.User.findByPk(req.body.user_id);
-        //cek apakah saldo cukup
-        if (userData.points < eventData.vip_ticket_price)
-          return res.status(400).send("saldo tidak cukup");
-        // cek apakah stok masih ada
-        if (eventData.vip_ticket_stock < 1)
-          return res.status(400).send("tiket vip sudah habis");
-        await eventData.increment({ vip_ticket_stock: -1 });
-        //ngurangin saldo user
-        await userData.increment({ points: -eventData.vip_ticket_price });
-        const transactionData = await this.db.create({
-          user_id: req.body.user_id,
-          event_id: req.body.event_id,
-          ticket_category: "vip",
-          total_price: eventData.vip_ticket_price,
-        });
-        res.status(201).send(transactionData);
-      } else if (req.body.normal_ticket) {
-        const userData = await db.User.findByPk(req.body.user_id);
-        //cek apakah saldo cukup
-        if (userData.points < eventData.normal_ticket_price)
-          return res.status(400).send("saldo tidak cukup");
-        // cek apakah stok masih ada
-        if (eventData.normal_ticket_stock < 1)
-          return res.status(400).send("tiket normal sudah habis");
-        await eventData.increment({ normal_ticket_stock: -1 });
-        //ngurangin saldo user
-        await userData.increment({ points: -eventData.normal_ticket_price });
-        const transactionData = await this.db.create({
-          user_id: req.body.user_id,
-          event_id: req.body.event_id,
-          ticket_category: "normal",
-          total_price: eventData.normal_ticket_price,
-        });
-        res.status(201).send(transactionData);
-      } else {
-        const userData = await db.User.findByPk(req.body.user_id);
-        //cek apakah saldo cukup
-        if (userData.points < eventData.presale_ticket_price)
-          return res.status(400).send("saldo tidak cukup");
-        // cek apakah stok masih ada
-        if (eventData.presale_ticket_stock < 1)
-          return res.status(400).send("tiket presale sudah habis");
-        await eventData.increment({ presale_ticket_stock: -1 });
-        //ngurangin saldo user
-        await userData.increment({ points: -eventData.presale_ticket_price });
-        const transactionData = await this.db.create({
-          user_id: req.body.user_id,
-          event_id: req.body.event_id,
-          ticket_category: "presale",
-          total_price: eventData.presale_ticket_price,
-        });
-        res.status(201).send(transactionData);
-      }
+      await db.sequelize.transaction(async (t) => {
+        const { event_id, user_id } = req.body;
+
+        const userData = await db.User.findByPk(user_id, { transaction: t });
+        if (!userData) throw new Error("user not found");
+
+        const eventData = await db.Event.findByPk(event_id, { transaction: t });
+        if (!eventData) throw new Error("event not found");
+
+        if (eventData.dataValues.isfree == false) {
+          if (req.body.vip_ticket) {
+            //cek apakah saldo cukup
+            if (userData.points < eventData.vip_ticket_price)
+              return res.status(400).send("saldo tidak cukup");
+
+            // cek apakah stok masih ada
+            if (eventData.vip_ticket_stock < 1)
+              return res.status(400).send("tiket vip sudah habis");
+            //kalau masih ada, kurangin stok 1
+            await eventData.increment(
+              { vip_ticket_stock: -1 },
+              { transaction: t }
+            );
+
+            //ngurangin saldo user
+            await userData.increment(
+              { points: -eventData.vip_ticket_price },
+              { transaction: t }
+            );
+            const transactionData = await this.db.create({
+              user_id: user_id,
+              event_id: event_id,
+              ticket_category: "vip",
+              total_price: eventData.vip_ticket_price,
+            });
+            return res.status(201).send(transactionData);
+          } else if (req.body.normal_ticket) {
+            //cek apakah saldo cukup
+            if (userData.points < eventData.normal_ticket_price)
+              return res.status(400).send("saldo tidak cukup");
+
+            // cek apakah stok masih ada
+            if (eventData.normal_ticket_stock < 1)
+              return res.status(400).send("tiket normal sudah habis");
+            await eventData.increment({ normal_ticket_stock: -1 });
+
+            //ngurangin saldo user
+            await userData.increment({
+              points: -eventData.normal_ticket_price,
+            });
+            const transactionData = await this.db.create({
+              user_id: user_id,
+              event_id: event_id,
+              ticket_category: "normal",
+              total_price: eventData.normal_ticket_price,
+            });
+            return res.status(201).send(transactionData);
+          } else {
+            //cek apakah saldo cukup
+            if (userData.points < eventData.presale_ticket_price)
+              return res.status(400).send("saldo tidak cukup");
+
+            // cek apakah stok masih ada
+            if (eventData.presale_ticket_stock < 1)
+              return res.status(400).send("tiket presale sudah habis");
+            await eventData.increment({ presale_ticket_stock: -1 });
+
+            //ngurangin saldo user
+            await userData.increment({
+              points: -eventData.presale_ticket_price,
+            });
+            const transactionData = await this.db.create({
+              user_id: user_id,
+              event_id: event_id,
+              ticket_category: "presale",
+              total_price: eventData.presale_ticket_price,
+            });
+            return res.status(201).send(transactionData);
+          }
+        } else {
+          const transactionData = await this.db.create({
+            user_id: user_id,
+            event_id: event_id,
+            ticket_category: "free",
+            total_price: 0,
+          });
+          res.status(201).send({
+            message: "Event ini gratis, tiket anda sudah dibuat",
+            data: transactionData,
+          });
+        }
+      });
+    } catch (error) {
+      res.status(500).send(error?.message);
+    }
+  }
+
+  async getUserByEvent(req, res) {
+    try {
+      const userData = await db.User.findByPk(req.params.id, {
+        include: [
+          {
+            model: db.Transaction,
+            include: [{ model: db.Event, attributes: ["name"] }],
+          },
+        ],
+      });
+      res.status(200).send(userData);
+    } catch (error) {
+      res.status(500).send(error?.message);
+    }
+  }
+
+  async getEventByUser(req, res) {
+    try {
+      const eventData = await db.Event.findByPk(req.params.id, {
+        include: [
+          {
+            model: db.Transaction,
+            attributes: ["id"],
+            include: [{ model: db.User, attributes: ["id", "username"] }],
+          },
+        ],
+      });
+      res.status(200).send(eventData);
     } catch (error) {
       res.status(500).send(error?.message);
     }

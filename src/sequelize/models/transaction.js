@@ -11,13 +11,13 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       models.Transaction.belongsTo(models.User, { foreignKey: "user_id" });
       models.Transaction.belongsTo(models.Event, { foreignKey: "event_id" });
+      models.Transaction.hasMany(models.User, { foreignKey: "id" });
     }
   }
   Transaction.init(
     {
       ticket_category: DataTypes.STRING,
       total_price: DataTypes.INTEGER,
-      transaction_date: DataTypes.DATE,
     },
     {
       sequelize,

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Discussion_reply, { foreignKey: "userid" });
       User.belongsTo(models.Location, { foreignKey: "id" });
       User.belongsTo(models.User_role, { foreignKey: "id" });
+      User.belongsTo(models.Transaction, { foreignKey: "id" });
     }
   }
   User.init(

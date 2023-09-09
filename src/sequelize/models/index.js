@@ -127,4 +127,12 @@ db.User.belongsTo(db.User_role, { foreignKey: "role" });
 db.Ticket_category.hasMany(db.Ticket, { foreignKey: "category" });
 db.Ticket.belongsTo(db.Ticket_category, { foreignKey: "category" });
 
+db.User.hasMany(db.Transaction, { foreignKey: "user_id" });
+db.Transaction.belongsTo(db.User, { foreignKey: "user_id" });
+
+db.Transaction.belongsTo(db.Event, { foreignKey: "event_id" });
+db.Event.hasMany(db.Transaction, { foreignKey: "event_id" });
+
+db.Transaction.associate(db);
+
 module.exports = db;
