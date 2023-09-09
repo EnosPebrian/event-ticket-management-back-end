@@ -5,23 +5,29 @@ const {
   validate,
 } = require("../middlewares/register_validator");
 const route = require(`express`).Router();
+const api_key_verificator = require("../middlewares/api_KeyVerificator");
 
 // route.get(`/`, userController.getAll.bind(userController));
 
 route.get("/token", userController.getUserByToken.bind(userController));
 
-route.get(`/:id`, userController.getById.bind(userController));
+route.get(
+  `/:id`,
+  api_key_verificator,
+  userController.getById.bind(userController)
+);
 
 route.post(`/`, userController.create.bind(userController));
 route.post(
   `/new_account`,
   userValidationRules(),
   validate,
+  api_key_verificator,
   userController.register.bind(userController)
 );
 route.post(
   `/token`,
-  authVerificator,
+  api_key_verificator,
   userController.keepLogin.bind(userController)
 );
 route.post(

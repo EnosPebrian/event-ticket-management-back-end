@@ -16,6 +16,10 @@ class UserController extends Controller {
     const { email, reference } = req.body;
     const t = await db.sequelize.transaction();
     try {
+      if (req.body.password !== req.body.confirmPassword)
+        throw new Error(
+          "Your password does not match to password confirmation"
+        );
       await this.db
         .findOne(
           {
