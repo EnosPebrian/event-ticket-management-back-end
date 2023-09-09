@@ -57,7 +57,6 @@ db.Photo_event = require("./photo_event")(sequelize, Sequelize);
 db.Event_category = require("./event_category")(sequelize, Sequelize);
 db.User_role = require("./user_role")(sequelize, Sequelize);
 db.Ticket_category = require("./ticket_category")(sequelize, Sequelize);
-db.Transaction = require("./transaction")(sequelize, Sequelize);
 
 db.Event.hasMany(db.Photo_event, {
   foreignKey: "eventid",
@@ -127,7 +126,5 @@ db.User_role.hasMany(db.User, { foreignKey: "role" });
 db.User.belongsTo(db.User_role, { foreignKey: "role" });
 db.Ticket_category.hasMany(db.Ticket, { foreignKey: "category" });
 db.Ticket.belongsTo(db.Ticket_category, { foreignKey: "category" });
-
-db.Transaction.associate(db);
 
 module.exports = db;

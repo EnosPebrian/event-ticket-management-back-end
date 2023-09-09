@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Ticket, { foreignKey: "userid" });
       User.hasMany(models.Discussion, { foreignKey: "userid" });
       User.hasMany(models.Discussion_reply, { foreignKey: "userid" });
-      User.hasMany(models.Transaction, { foreignKey: "user_id" });
       User.belongsTo(models.Location, { foreignKey: "id" });
       User.belongsTo(models.User_role, { foreignKey: "id" });
     }
