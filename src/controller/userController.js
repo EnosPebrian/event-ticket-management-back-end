@@ -97,7 +97,7 @@ class UserController extends Controller {
       const { id } = req.query;
       const user = await this.db.findByPk(id);
       const payload = jwt.verify(token, process.env.jwt_secret);
-
+      console.log(token, id, user.dataValues.verify_token);
       if (token != user.dataValues.verify_token)
         throw new Error(`Your credential does not match`);
       if (payload.is_verified)
@@ -149,7 +149,7 @@ class UserController extends Controller {
 
   async keepLogin(req, res) {
     try {
-      const { token } = req.params;
+      const { token } = req;
       const payload = jwt.verify(token, process.env.jwt_secret);
       if (!payload?.id) throw new Error("invalid token");
       const user = await this.db.findByPk(payload.id);

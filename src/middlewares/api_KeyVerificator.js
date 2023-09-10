@@ -4,7 +4,7 @@ const api_key_verificator = (req, res, next) => {
       throw new Error("Invalid API Key");
     next();
   } catch (err) {
-    res.status(400).send(err?.message);
+    return res.status(400).send(err?.message);
   }
 };
 
