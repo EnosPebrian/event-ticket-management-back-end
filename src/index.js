@@ -32,6 +32,7 @@ app.use(`/event_categories`, router.eventCategoryRouter);
 app.use(`/tickets`, router.ticketRouter);
 app.use(`/events`, router.eventRouter);
 app.use(`/photo_events`, router.photo_eventRouter);
+app.use("/transactions", router.transactionRouter);
 
 app.use(
   "/public/imgevents",

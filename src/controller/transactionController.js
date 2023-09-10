@@ -2,6 +2,7 @@ const { where } = require("sequelize");
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
 const user = require("../sequelize/models/user");
+const jwt = require("jsonwebtoken");
 
 class TransactionController extends Controller {
   constructor(modelname) {
@@ -22,7 +23,12 @@ class TransactionController extends Controller {
   async createTransaction(req, res) {
     try {
       await db.sequelize.transaction(async (t) => {
-        const { event_id, user_id } = req.body;
+        const { event_id } = req.body;
+        const { token } = req;
+
+        const idUser = jwt.verify(token, process.env.jwt_secret);
+        // console.log(idUser.id);
+        const user_id = idUser.id;
 
         const userData = await db.User.findByPk(user_id, { transaction: t });
         if (!userData) throw new Error("user not found");
