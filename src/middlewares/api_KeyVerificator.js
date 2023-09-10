@@ -1,6 +1,6 @@
 const api_key_verificator = (req, res, next) => {
   try {
-    if (req.headers.api_key !== "fomophobic")
+    if (req.headers["api-key"] !== "fomophobic")
       throw new Error("Invalid API Key");
     next();
   } catch (err) {

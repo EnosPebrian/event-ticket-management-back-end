@@ -6,7 +6,7 @@ const authVerificator = async (req, res, next) => {
     const { token } = req;
     const { userid } = req.body;
     const data = jwt.verify(token, process.env.jwt_secret);
-    if (req.headers.api_key !== "fomophobic") {
+    if (req.headers["api-key"] !== "fomophobic") {
       throw new Error("Invalid API Key");
     }
 
