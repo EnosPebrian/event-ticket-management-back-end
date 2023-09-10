@@ -1,5 +1,6 @@
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
+const moment = require("moment");
 
 class ticketController extends Controller {
   constructor(modelname) {
@@ -22,7 +23,21 @@ class ticketController extends Controller {
             model: db.User,
             attributes: ["username"],
           },
-          { model: db.Review, attributes: ["id", "createdAt", "updatedAt"] },
+          {
+            model: db.Review,
+            attributes: {
+              include: [
+                [
+                  db.sequelize.literal(
+                    `TIMEDIFF('${moment()
+                      .utc()
+                      .format("YYYY-MM-DD HH:mm:ss")}',Review.createdAt)`
+                  ),
+                  "timediff",
+                ],
+              ],
+            },
+          },
           { model: db.Event, attributes: ["name", "date_start"] },
         ],
       })

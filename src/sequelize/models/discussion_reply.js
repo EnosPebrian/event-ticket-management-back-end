@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       eventid: DataTypes.INTEGER,
       userid: DataTypes.INTEGER,
       discussion_id: DataTypes.INTEGER,
-      reply_text: DataTypes.STRING,
+      reply_text: { type: DataTypes.STRING, allowNull: false },
       createdAt: DataTypes.DATE,
     },
     {

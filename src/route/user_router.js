@@ -32,19 +32,30 @@ route.post(
 );
 route.post(
   `/new_account_verification/:id`,
+  api_key_verificator,
   userController.sendVerification.bind(userController)
 );
 route.post(
   `/verify_user/:token`,
+  api_key_verificator,
   userController.verifyAccount.bind(userController)
 );
-route.post(`/auth`, userController.login.bind(userController));
+route.post(
+  `/auth`,
+  api_key_verificator,
+  userController.login.bind(userController)
+);
 
 route.patch(
   `/:id`,
+  api_key_verificator,
   userController.update.bind(userController),
   userController.getById.bind(userController)
 );
-route.delete(`/:id`, userController.delete.bind(userController));
+route.delete(
+  `/:id`,
+  api_key_verificator,
+  userController.delete.bind(userController)
+);
 
 module.exports = route;

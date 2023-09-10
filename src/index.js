@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const bearerToken = require("express-bearer-token");
+const moment = require("moment");
 
 const PORT = 2444;
 
@@ -32,5 +33,6 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`server is online on PORT ${PORT}`);
+  console.log(moment().format("YYYY-MM-DD HH:mm:ss"));
   // db.sequelize.sync({ alter: true });
 });

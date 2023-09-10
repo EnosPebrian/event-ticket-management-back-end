@@ -1,5 +1,6 @@
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
+const moment = require("moment");
 
 class ReviewController extends Controller {
   constructor(modelname) {
@@ -11,6 +12,18 @@ class ReviewController extends Controller {
     const limit = 15;
     this.db
       .findAndCountAll({
+        attributes: {
+          include: [
+            [
+              db.sequelize.literal(
+                `TIMEDIFF('${moment()
+                  .utc()
+                  .format("YYYY-MM-DD HH:mm:ss")}',Review.createdAt)`
+              ),
+              "timediff",
+            ],
+          ],
+        },
         where: { eventid },
         limit: limit,
         offset: (page ? Number(page) - 1 : 0) * limit,

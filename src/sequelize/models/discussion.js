@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       eventid: DataTypes.INTEGER,
       userid: DataTypes.INTEGER,
-      question_text: DataTypes.STRING,
+      question_text: { type: DataTypes.STRING, allowNull: false },
       createdAt: DataTypes.DATE,
     },
     {

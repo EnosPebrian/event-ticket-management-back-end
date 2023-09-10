@@ -24,6 +24,7 @@ module.exports = {
       },
       reply_text: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

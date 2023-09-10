@@ -28,6 +28,7 @@ module.exports = {
       },
       comments: {
         type: Sequelize.TEXT,
+        allowNull: false,
       },
       show_name: {
         type: Sequelize.BOOLEAN,

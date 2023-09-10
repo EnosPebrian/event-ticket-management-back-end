@@ -20,6 +20,7 @@ module.exports = {
       },
       question_text: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

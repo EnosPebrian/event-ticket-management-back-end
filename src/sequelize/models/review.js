@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       userid: DataTypes.INTEGER,
       ratings: DataTypes.INTEGER,
       ticketcode: DataTypes.STRING,
-      comments: DataTypes.TEXT,
+      comments: { type: DataTypes.TEXT, allowNull: false },
       show_name: DataTypes.BOOLEAN,
       createdAt: DataTypes.DATE,
     },
