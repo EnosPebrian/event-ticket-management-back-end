@@ -11,7 +11,7 @@ module.exports = {
       },
       eventid: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `events` }, key: "id" },
+        references: { model: { tableName: `Events` }, key: "id" },
         onDelete: "cascade",
       },
       url: {
