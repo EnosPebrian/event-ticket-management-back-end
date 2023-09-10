@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("discussion_replies", {
+    await queryInterface.createTable("Discussion_replies", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,16 +11,16 @@ module.exports = {
       },
       eventid: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `events`, key: `id` } },
+        references: { model: { tableName: `Events`, key: `id` } },
         onDelete: "cascade",
       },
       userid: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `users`, key: `id` } },
+        references: { model: { tableName: `Users`, key: `id` } },
       },
       discussion_id: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `discussions`, key: "id" } },
+        references: { model: { tableName: `Discussions`, key: "id" } },
       },
       reply_text: {
         type: Sequelize.STRING,
@@ -37,6 +37,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("discussion_replies");
+    await queryInterface.dropTable("Discussion_replies");
   },
 };

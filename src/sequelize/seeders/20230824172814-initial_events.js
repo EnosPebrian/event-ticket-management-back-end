@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    await queryInterface.bulkInsert(`events`, [
+    await queryInterface.bulkInsert(`Events`, [
       {
         id: 1,
         name: "masak air",

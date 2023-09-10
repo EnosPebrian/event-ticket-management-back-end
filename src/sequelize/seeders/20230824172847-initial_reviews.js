@@ -11,7 +11,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-     */ await queryInterface.bulkInsert(`reviews`, [
+     */ await queryInterface.bulkInsert(`Reviews`, [
       {
         id: 1,
         eventid: 1,

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("events", {
+    await queryInterface.createTable("Events", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,7 +14,7 @@ module.exports = {
       },
       location: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `locations` }, key: "id" },
+        references: { model: { tableName: `Locations` }, key: "id" },
       },
       venue: {
         type: Sequelize.STRING,
@@ -58,7 +58,7 @@ module.exports = {
       },
       event_creator_userid: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `users` }, key: `id` },
+        references: { model: { tableName: `Users` }, key: `id` },
       },
       isfree: {
         type: Sequelize.BOOLEAN,
@@ -77,6 +77,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("events");
+    await queryInterface.dropTable("Events");
   },
 };

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("tickets", {
+    await queryInterface.createTable("Tickets", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,11 +11,11 @@ module.exports = {
       },
       userid: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `users`, key: `id` } },
+        references: { model: { tableName: `Users`, key: `id` } },
       },
       eventid: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `events`, key: `id` } },
+        references: { model: { tableName: `Events`, key: `id` } },
         onDelete: "cascade",
       },
       ticketcode: {
@@ -41,6 +41,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("tickets");
+    await queryInterface.dropTable("Tickets");
   },
 };

@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    await queryInterface.bulkInsert("locations", [
+    await queryInterface.bulkInsert("Locations", [
       {
         id: 1101,
         location_name: "KAB. SIMEULUE",
