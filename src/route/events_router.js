@@ -10,10 +10,19 @@ route.get(`/:id`, eventsController.getById.bind(eventsController));
 
 route.patch(
   `/:id`,
-  eventsController.update.bind(eventsController),
-  eventsController.getById.bind(eventsController)
+  fileUploader({
+    destinationFolder: "imgevents",
+    prefix: "IMG-EVENT-UPDATE",
+    filetype: "image",
+  }).array("image"),
+  validationEvent,
+  eventsController.updateEvent.bind(eventsController),
+  eventsController.getEventsById.bind(eventsController)
 );
-route.delete(`/:id`, eventsController.delete.bind(eventsController));
+route.delete(
+  `/:id`,
+  eventsController.deleteEventWithImage.bind(eventsController)
+);
 route.post(
   `/`,
   fileUploader({
@@ -22,7 +31,6 @@ route.post(
     filetype: "image",
   }).array("image"),
   validationEvent,
-
   eventsController.createEvent.bind(eventsController)
 );
 

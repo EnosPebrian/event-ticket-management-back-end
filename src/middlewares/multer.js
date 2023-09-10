@@ -15,7 +15,7 @@ const fileUploader = ({
       const fileName = `${prefix}_${moment().format(
         "YYYY-MM-DD-HH-mm-ss"
       )}.${fileExtention}`;
-      console.log(fileName);
+      // console.log(fileName);
       cb(null, fileName);
     },
   });

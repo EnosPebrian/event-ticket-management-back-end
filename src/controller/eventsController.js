@@ -164,7 +164,6 @@ class EventController extends Controller {
     try {
       const { token } = req;
       const dataIdToken = jwt.verify(token, process.env.jwt_secret);
-      // console.log(data.id);
       const dataEvent = {
         ...req.body,
         event_creator_userid: dataIdToken.id,
@@ -173,10 +172,11 @@ class EventController extends Controller {
         is_sponsored: 0,
         url: req.body,
       };
+      console.log(dataEvent);
       if (dataEvent) {
         const checkVerifyedUser = await db.User.findByPk(dataIdToken.id);
         // console.log(checkVerifyedUser.dataValues.is_verified);
-
+        console.log(checkVerifyedUser, "ini data user");
         if (
           checkVerifyedUser.dataValues.is_verified == null ||
           checkVerifyedUser.dataValues.is_verified == 0
@@ -259,6 +259,189 @@ class EventController extends Controller {
         message: err?.message,
       });
     }
+  }
+  async updateEvent(req, res, next) {
+    const fileImg = req?.files;
+    const tempImg = fileImg.map((img) => img.filename);
+
+    console.log(tempImg);
+    // const formData = new FormData();
+    // formData.append();
+
+    // console.log(req.body);
+    try {
+      const { token } = req;
+      const dataIdToken = jwt.verify(token, process.env.jwt_secret);
+      const dataEvent = {
+        ...req.body,
+      };
+
+      if (dataEvent) {
+        const checkVerifyedUser = await db.User.findByPk(dataIdToken.id);
+        // console.log(checkVerifyedUser.dataValues.is_verified);
+        // console.log(checkVerifyedUser, "ini data user");
+        if (
+          checkVerifyedUser.dataValues.is_verified == null ||
+          checkVerifyedUser.dataValues.is_verified == 0
+        ) {
+          throw new Error("Silahkan verifikasi akun anda dulu");
+        }
+
+        // fetch location
+        const locationInput = req.body.location ? req.body.location : "";
+        const locationId = [];
+        if (locationInput !== "") {
+          const locationFind = await db.Location.findAll({
+            where: {
+              location_name: {
+                [Op.like]: `%${locationInput}%`,
+              },
+            },
+          })
+            .then((result) => locationId.push(result[0].dataValues))
+            .catch((err) => {
+              throw new Error("Lokasi tidak di temukan");
+            });
+        }
+        // console.log(locationId, "ini locaiton");
+
+        // fetch category event
+        const categoryEvent = await db.Event_category.findAll({
+          where: {
+            category: {
+              [Op.like]: `%${req.body?.category}%`,
+            },
+          },
+        })
+          .then((result) => result)
+          .catch((err) => {
+            throw new Error("Category tidak di temukan");
+          });
+
+        if (categoryEvent.length === 0)
+          throw new Error("Category tidak di temukan");
+
+        const dataCreate = {
+          ...dataEvent,
+          event_creator_userid: dataIdToken.id,
+          isfree: 0,
+          is_sponsored: 0,
+        };
+        if (dataCreate.vip_ticket_price == "") {
+          dataCreate.isfree = 1;
+          dataCreate.is_sponsored = 1;
+          dataCreate.vip_ticket_price = 0;
+          dataCreate.vip_ticket_stock = 0;
+          dataCreate.presale_ticket_price = 0;
+          dataCreate.presale_ticket_stock = 0;
+          dataCreate.normal_ticket_price = 0;
+          dataCreate.normal_ticket_stock = 0;
+        }
+
+        dataCreate.location = locationId[0].id;
+        dataCreate.category = categoryEvent[0].id;
+        console.log(dataCreate);
+        console.log(locationId[0].id, "ini category");
+        console.log(categoryEvent[0].id, "ini category");
+
+        // Find Event
+        const findEvent = await db.Event.findOne({
+          where: {
+            id: req.params.id,
+          },
+        });
+        if (!findEvent) {
+          throw new Error("Event tidak di temukan");
+        }
+
+        //Update Event
+        await findEvent.update(dataCreate);
+        // console.log(findEvent.dataValues, "ini event");
+        const findPhotoEvent = await db.Photo_event.findOne({
+          where: {
+            eventid: req.params.id,
+          },
+        });
+        if (!findPhotoEvent) {
+          throw new Error("Photo event tidak di temukan");
+        }
+        // console.log(findPhotoEvent.dataValues, "in photo");
+
+        for (const img of tempImg) {
+          await db.Photo_event.update(
+            { url: img },
+            {
+              where: { eventid: req.params.id },
+            }
+          );
+        }
+      }
+
+      next();
+    } catch (err) {
+      res.json({
+        status: 500,
+        message: err?.message,
+      });
+    }
+  }
+  async getEventsById(req, res) {
+    const { id } = req.params;
+    await db.Event.findByPk(id, {
+      include: [
+        {
+          model: db.Photo_event,
+          as: "Photo_event",
+          attributes: ["eventid", "url"],
+        },
+      ],
+    })
+      .then((result) =>
+        res.status(201).json({
+          message: "Data berhasil di update",
+          result,
+        })
+      )
+      .catch((err) => res.status(500).send(err?.message));
+  }
+  async deleteEventWithImage(req, res) {
+    try {
+      const { token } = req;
+      const dataToken = jwt.verify(token, process.env.jwt_secret);
+
+      const checkVerif = await db.User.findByPk(dataToken.id);
+      console.log(checkVerif.dataValues);
+      if (checkVerif.dataValues.is_verified == 0) {
+        throw new Error("Silahkan verifikakasi akun anda dulu");
+      }
+      await db.Event.destroy({ where: { id: req.params.id } });
+      await db.Photo_event.destroy({
+        where: { eventid: req.params.id },
+      });
+
+      res.json({
+        status: 201,
+        message: "Event berhasil di hapus",
+      });
+    } catch (err) {
+      res.json({
+        status: 500,
+        message: err.message,
+      });
+    }
+  }
+  async getAllForDashboardProfile(req, res) {
+    try {
+      const { token } = req;
+      const idUser = jwt.verify(token, process.env.jwt_secret);
+      console.log(idUser);
+    } catch (err) {
+      res.json({
+        status: 400,
+        message: err?.message,
+      });
+    }
+    const { token } = req;
   }
 }
 

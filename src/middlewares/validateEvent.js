@@ -14,7 +14,7 @@ const validationEvent = (req, res, next) => {
     const { error } = eventValidationSchema.validate(req.body);
     // console.log(error.message, "asdasdasd permisi");
     if (error?.message)
-      throw new Error("Input selain berhubungan dengan event ada yang kosong");
+      throw new Error("Input selain berhubungan dengan price dan stock kosong");
 
     next();
   } catch (err) {
