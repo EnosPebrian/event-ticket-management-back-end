@@ -23,7 +23,7 @@ module.exports = {
         bio: "",
         points: 61000,
         referralcode: "zxciqbr12111",
-        role: 3,
+        role: 1,
         birthdate: "2000-01-01",
         location: 3171,
         createdAt: "2023-07-31 17:00:00",
