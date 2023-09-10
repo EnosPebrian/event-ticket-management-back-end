@@ -350,34 +350,39 @@ class EventController extends Controller {
             id: req.params.id,
           },
         });
+
         if (!findEvent) {
           throw new Error("Event tidak di temukan");
         }
+        // console.log(findEvent.event_creator_userid, "INI ECETTTTTT");
 
-        //Update Event
-        await findEvent.update(dataCreate);
-        // console.log(findEvent.dataValues, "ini event");
-        const findPhotoEvent = await db.Photo_event.findOne({
-          where: {
-            eventid: req.params.id,
-          },
-        });
-        if (!findPhotoEvent) {
-          throw new Error("Photo event tidak di temukan");
-        }
-        // console.log(findPhotoEvent.dataValues, "in photo");
+        if (findEvent.event_creator_userid != dataIdToken.id) {
+          throw new Error("Tidak bisa edit event");
+        } else {
+          //Update Event
+          await findEvent.update(dataCreate);
+          // console.log(findEvent.dataValues, "ini event");
+          const findPhotoEvent = await db.Photo_event.findOne({
+            where: {
+              eventid: req.params.id,
+            },
+          });
+          if (!findPhotoEvent) {
+            throw new Error("Photo event tidak di temukan");
+          }
+          // console.log(findPhotoEvent.dataValues, "in photo");
 
-        for (const img of tempImg) {
-          await db.Photo_event.update(
-            { url: img },
-            {
-              where: { eventid: req.params.id },
-            }
-          );
+          for (const img of tempImg) {
+            await db.Photo_event.update(
+              { url: img },
+              {
+                where: { eventid: req.params.id },
+              }
+            );
+          }
+          next();
         }
       }
-
-      next();
     } catch (err) {
       res.json({
         status: 500,
@@ -410,19 +415,30 @@ class EventController extends Controller {
       const dataToken = jwt.verify(token, process.env.jwt_secret);
 
       const checkVerif = await db.User.findByPk(dataToken.id);
-      console.log(checkVerif.dataValues);
+      // console.log(checkVerif.dataValues);
       if (checkVerif.dataValues.is_verified == 0) {
         throw new Error("Silahkan verifikakasi akun anda dulu");
       }
-      await db.Event.destroy({ where: { id: req.params.id } });
-      await db.Photo_event.destroy({
-        where: { eventid: req.params.id },
+      //fetch event
+      const findEvent = await db.Event.findOne({
+        where: { id: req.params.id },
       });
+      if (!findEvent) {
+        throw new Error("Event tidak di temukan");
+      }
+      if (findEvent.dataValues.event_creator_userid != dataToken.id) {
+        throw new Error("Tidak bisa delete event");
+      } else {
+        await db.Event.destroy({ where: { id: req.params.id } });
+        await db.Photo_event.destroy({
+          where: { eventid: req.params.id },
+        });
 
-      res.json({
-        status: 201,
-        message: "Event berhasil di hapus",
-      });
+        res.json({
+          status: 201,
+          message: "Event berhasil di hapus",
+        });
+      }
     } catch (err) {
       res.json({
         status: 500,

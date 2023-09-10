@@ -189,7 +189,7 @@ class UserController extends Controller {
       const inputPoints = req.body.points;
       let newPoints = findUser.points;
       newPoints += inputPoints;
-      console.log(newPoints);
+      // console.log(newPoints);
 
       findUser.update({ points: newPoints });
 
