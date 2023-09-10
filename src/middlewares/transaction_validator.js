@@ -2,7 +2,6 @@ const { body, validationResult } = require(`express-validator`);
 
 const transactionValidationRules = () => {
   return [
-    body("user_id").isNumeric().withMessage("user id must be a number"),
     body("event_id").isNumeric().withMessage("event id must be a number"),
     body("vip_ticket").isBoolean().withMessage("vip ticket must be boolean"),
     body("normal_ticket")
