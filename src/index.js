@@ -5,7 +5,7 @@ const moment = require("moment");
 const bearertoken = require("express-bearer-token");
 const router = require("./route/index");
 
-const PORT = 2444;
+const PORT = process.env.PORT;
 
 const app = express();
 
