@@ -14,7 +14,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    await queryInterface.bulkInsert("Discussion_replies", [
+    await queryInterface.bulkInsert("discussion_replies", [
       {
         eventid: 1,
         userid: 2,

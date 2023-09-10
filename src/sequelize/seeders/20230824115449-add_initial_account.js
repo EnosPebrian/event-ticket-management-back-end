@@ -14,7 +14,7 @@ module.exports = {
      * }], {});
      */
 
-    await queryInterface.bulkInsert("Users", [
+    await queryInterface.bulkInsert("users", [
       {
         id: 1,
         email: "admin@mail.com",
