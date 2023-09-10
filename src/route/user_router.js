@@ -28,6 +28,7 @@ route.post(
   userController.verifyAccount.bind(userController)
 );
 route.post(`/auth`, userController.login.bind(userController));
+route.post(`/topup`, userController.topUp.bind(userController));
 
 route.patch(
   `/:id`,

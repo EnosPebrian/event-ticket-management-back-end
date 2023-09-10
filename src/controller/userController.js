@@ -179,6 +179,32 @@ class UserController extends Controller {
       return res.status(400).send(err?.message);
     }
   }
+
+  async topUp(req, res) {
+    try {
+      const { token } = req;
+      const userId = jwt.verify(token, process.env.jwt_secret);
+      const findUser = await db.User.findByPk(userId.id);
+
+      const inputPoints = req.body.points;
+      let newPoints = findUser.points;
+      newPoints += inputPoints;
+      console.log(newPoints);
+
+      findUser.update({ points: newPoints });
+
+      res.json({
+        status: 200,
+        message: "Berhasil top up",
+        findUser,
+      });
+    } catch (err) {
+      res.json({
+        status: 400,
+        message: err?.message,
+      });
+    }
+  }
 }
 
 module.exports = new UserController(`User`);
