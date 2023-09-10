@@ -430,11 +430,35 @@ class EventController extends Controller {
       });
     }
   }
-  async getAllForDashboardProfile(req, res) {
+  async getEventWithUser(req, res) {
     try {
       const { token } = req;
       const idUser = jwt.verify(token, process.env.jwt_secret);
-      console.log(idUser);
+      if (!idUser) {
+        throw new Error("Silahkan login dulu");
+      }
+      const findEvent = await db.Event.findAll({
+        where: {
+          event_creator_userid: idUser.id,
+        },
+        include: [
+          {
+            model: db.User,
+            as: "User",
+            attributes: { exclude: [] },
+          },
+          {
+            model: db.Photo_event,
+            as: "Photo_event",
+            attributes: ["eventid", "url"],
+          },
+        ],
+      });
+      findEvent.forEach((event) => {
+        console.log(event.dataValues);
+      });
+
+      res.status(201).send(findEvent);
     } catch (err) {
       res.json({
         status: 400,

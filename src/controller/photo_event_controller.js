@@ -27,6 +27,7 @@ class Photo_eventController extends Controller {
 
     res.send("Gambar berhasil di upload");
   }
+  async getPhotoEvent(req, res) {}
 }
 
 module.exports = new Photo_eventController(`Photo_event`);

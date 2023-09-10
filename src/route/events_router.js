@@ -4,7 +4,7 @@ const { blobUploader, fileUploader } = require("../middlewares/multer");
 const validationEvent = require("../middlewares/validateEvent");
 
 route.get(`/`, eventsController.getAll.bind(eventsController));
-
+route.get(`/user`, eventsController.getEventWithUser.bind(eventsController));
 route.get(`/q`, eventsController.getByQuery.bind(eventsController));
 route.get(`/:id`, eventsController.getById.bind(eventsController));
 
