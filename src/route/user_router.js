@@ -1,5 +1,4 @@
 const userController = require(`../controller/userController`);
-const authVerificator = require(`../middlewares/authVerificator`);
 const {
   userValidationRules,
   validate,
@@ -40,11 +39,14 @@ route.post(
   api_key_verificator,
   userController.verifyAccount.bind(userController)
 );
+
 route.post(
   `/auth`,
   api_key_verificator,
   userController.login.bind(userController)
 );
+
+route.post(`/topup`, userController.topUp.bind(userController));
 
 route.patch(
   `/:id`,

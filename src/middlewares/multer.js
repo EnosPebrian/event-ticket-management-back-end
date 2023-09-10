@@ -1,10 +1,38 @@
 const multer = require("multer");
 const moment = require("moment");
+
 const fileUploader = ({
   destinationFolder = "",
   prefix = "",
   filetype = "",
-}) => {};
+}) => {
+  const storageConfig = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, `${__dirname}/../public/images/${destinationFolder}`);
+    },
+    filename: (req, file, cb) => {
+      const fileExtention = file.mimetype.split("/")[1];
+      const fileName = `${prefix}_${moment().format(
+        "YYYY-MM-DD-HH-mm-ss"
+      )}.${fileExtention}`;
+      // console.log(fileName);
+      cb(null, fileName);
+    },
+  });
+
+  const uploader = multer({
+    storage: storageConfig,
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype.split("/")[0] != filetype) {
+        return cb(null, false);
+      }
+      return cb(null, true);
+    },
+    limits: 1000000,
+  });
+
+  return uploader;
+};
 
 const blobUploader = ({ filetype }) => {
   return multer({
@@ -18,4 +46,4 @@ const blobUploader = ({ filetype }) => {
   });
 };
 
-module.exports = { blobUploader };
+module.exports = { blobUploader, fileUploader };

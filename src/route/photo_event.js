@@ -1,11 +1,15 @@
 const Photo_eventController = require(`../controller/photo_event_controller`);
-const { blobUploader } = require("../middlewares/multer");
+const { blobUploader, fileUploader } = require("../middlewares/multer");
 const route = require(`express`).Router();
 
 route.get(`/`, Photo_eventController.getAll.bind(Photo_eventController));
 route.post(
   "/addphoto",
-  blobUploader({ filetype: "image" }).single("image"),
+  fileUploader({
+    destinationFolder: "imgevents",
+    prefix: "EVENT-IMG",
+    filetype: "image",
+  }).single("image"),
   Photo_eventController.addPhotoEvent.bind(Photo_eventController)
 );
 route.get(`/:id`, Photo_eventController.getById.bind(Photo_eventController));

@@ -1,6 +1,7 @@
 const eventsController = require(`../controller/eventsController`);
 const route = require(`express`).Router();
-const { blobUploader } = require("../middlewares/multer");
+const { blobUploader, fileUploader } = require("../middlewares/multer");
+const validationEvent = require("../middlewares/validateEvent");
 const api_key_verificator = require("../middlewares/api_KeyVerificator");
 
 route.get(
@@ -27,9 +28,28 @@ route.post(
 
 route.patch(
   `/:id`,
-  eventsController.update.bind(eventsController),
-  eventsController.getById.bind(eventsController)
+  fileUploader({
+    destinationFolder: "imgevents",
+    prefix: "IMG-EVENT-UPDATE",
+    filetype: "image",
+  }).array("image"),
+  validationEvent,
+  eventsController.updateEvent.bind(eventsController),
+  eventsController.getEventsById.bind(eventsController)
 );
-route.delete(`/:id`, eventsController.delete.bind(eventsController));
+route.delete(
+  `/:id`,
+  eventsController.deleteEventWithImage.bind(eventsController)
+);
+route.post(
+  `/`,
+  fileUploader({
+    destinationFolder: "imgevents",
+    prefix: "IMG-EVENT",
+    filetype: "image",
+  }).array("image"),
+  validationEvent,
+  eventsController.createEvent.bind(eventsController)
+);
 
 module.exports = route;

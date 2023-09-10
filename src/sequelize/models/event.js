@@ -13,8 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       Event.hasMany(models.Discussion_reply, { foreignKey: "eventid" });
       Event.hasMany(models.Review, { foreignKey: "eventid" });
       Event.hasMany(models.Ticket, { foreignKey: "eventid" });
-      Event.hasMany(models.Transaction, { foreignKey: "event_id" });
-      Event.hasMany(models.Photo_event, { foreignKey: "eventid" });
+      Event.hasMany(models.Photo_event, {
+        foreignKey: "eventid",
+      });
       Event.belongsTo(models.User, { foreignKey: "id" });
       Event.belongsTo(models.Location, { foreignKey: "id" });
       Event.belongsTo(models.Event_category, { foreignKey: "id" });

@@ -1,4 +1,4 @@
-const { Op, where } = require("sequelize");
+const { Op, where, DATE } = require("sequelize");
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
 const jwt = require("jsonwebtoken");
@@ -150,55 +150,45 @@ class EventController extends Controller {
       })
       .catch((err) => res.status(500).send(err?.message));
   }
+
   async createEvent(req, res) {
+    const fileImg = req?.files;
+    let tempImg = null;
+    tempImg = fileImg.map((img) => img.filename);
+
+    console.log(tempImg);
+    // const formData = new FormData();
+    // formData.append();
+
+    // console.log(req.body);
     try {
       const { token } = req;
       const dataIdToken = jwt.verify(token, process.env.jwt_secret);
-      // console.log(data.id);
       const dataEvent = {
-        // name: req.body.name,
-
-        // venue: req.body.venue,
-        // category: req.body.category,
-        // date_start: req.body.date_start,
-        // date_end: req.body.date_end,
-        // time_start: req.body.date_start,
-        // time_end: req.body.time_end,
-        // description: req.body.description,
-        // vip_ticket_price: req.body.vip_ticket_price,
-        // vip_ticket_stock: req.body.vip_ticket_stock,
-        // presale_ticket_price: req.body.presale_ticket_price,
-        // presale_ticket_stock: req.body.name.presale_ticket_stock,
-        // normal_ticket_price: req.body.normal_ticket_price,
-        // normal_ticket_stock: req.body.normal_ticket_stock,
-        // event_creator_userid: data.id,
-        // isfree: 1,
-        // is_sponsored: 1,
         ...req.body,
-
         event_creator_userid: dataIdToken.id,
-        isfree: 1,
-        is_sponsored: 1,
+        date_start: DATE("NOW"),
+        isfree: 0,
+        is_sponsored: 0,
+        url: req.body,
       };
-
+      console.log(dataEvent);
       if (dataEvent) {
-        const checkVerifyedUser = await db.User.findByPk(dataIdToken.id).then(
-          (result) => result
-        ); // check veryfied
-
-        console.log(checkVerifyedUser.dataValues.is_verified);
+        const checkVerifyedUser = await db.User.findByPk(dataIdToken.id);
+        // console.log(checkVerifyedUser.dataValues.is_verified);
+        console.log(checkVerifyedUser, "ini data user");
         if (
           checkVerifyedUser.dataValues.is_verified == null ||
           checkVerifyedUser.dataValues.is_verified == 0
         ) {
-          return res.send("Silahkan verifikasi akun anda dulu");
+          throw new Error("Silahkan verifikasi akun anda dulu");
         }
 
         // fetch location
         const locationInput = req.body.location ? req.body.location : "";
         const locationId = [];
         if (locationInput !== "") {
-          const locationEvent = await db.Location.findAll({
+          const locationFind = await db.Location.findAll({
             where: {
               location_name: {
                 [Op.like]: `%${locationInput}%`,
@@ -206,52 +196,292 @@ class EventController extends Controller {
             },
           })
             .then((result) => locationId.push(result[0].dataValues))
-            .catch((err) => res.status(404).send(err?.message));
+            .catch((err) => {
+              throw new Error("Lokasi tidak di temukan");
+            });
         }
-        if (!locationId.length) {
-          return res.send("Lokasi atau input salah");
-        }
+        // console.log(locationId, "ini locaiton");
 
         // fetch category event
         const categoryEvent = await db.Event_category.findAll({
           where: {
             category: {
-              [Op.like]: `%${req.body.category}%`,
+              [Op.like]: `%${req.body?.category}%`,
             },
           },
-        });
+        })
+          .then((result) => result)
+          .catch((err) => {
+            throw new Error("Category tidak di temukan");
+          });
 
-        if (!categoryEvent[0]) {
-          return res.status(404).send("Category not found");
-        }
-        // console.log(categoryEvent[0].dataValues.id);
+        if (categoryEvent.length === 0)
+          throw new Error("Category tidak di temukan");
 
         const dataCreate = { ...dataEvent };
-        if (
-          dataCreate.normal_ticket_price ||
-          dataCreate.vip_ticket_price ||
-          dataCreate.presale_ticket_price
-        ) {
-          dataCreate.isfree = 0;
-          dataCreate.is_sponsored = 0;
+        if (dataCreate.vip_ticket_price == "") {
+          dataCreate.isfree = 1;
+          dataCreate.is_sponsored = 1;
+          dataCreate.vip_ticket_price = 0;
+          dataCreate.vip_ticket_stock = 0;
+          dataCreate.presale_ticket_price = 0;
+          dataCreate.presale_ticket_stock = 0;
+          dataCreate.normal_ticket_price = 0;
+          dataCreate.normal_ticket_stock = 0;
         }
+
         dataCreate.location = locationId[0].id;
         dataCreate.category = categoryEvent[0].dataValues.id;
+        // console.log(categoryEvent[0].dataValues.id, "ini category");
 
-        // console.log(dataCreate);
-        // const createEvent = await db.Event.create(dataCreate);
+        //create event
+        const createEvent = await db.Event.create(dataCreate);
 
+        //add event photo to table photo event
+
+        const addPhotoEventPromise = tempImg.map(async (filename) => {
+          const addPhoto = await db.Photo_event.create({
+            url: filename,
+            eventid: createEvent.id,
+          });
+          return addPhoto;
+        });
+        const addPhotoEvent = await Promise.all(addPhotoEventPromise);
         res.status(200).json({
           message: "Create event success",
-          // event,
-          // locationEvent,
-          // createEvent,
-          dataCreate,
+          createEvent,
+          addPhotoEvent,
         });
       }
     } catch (err) {
-      res.status(500).send(err?.message);
+      res.json({
+        status: 404,
+        message: err?.message,
+      });
     }
+  }
+  async updateEvent(req, res, next) {
+    const fileImg = req?.files;
+    const tempImg = fileImg.map((img) => img.filename);
+
+    console.log(tempImg);
+    // const formData = new FormData();
+    // formData.append();
+
+    // console.log(req.body);
+    try {
+      const { token } = req;
+      const dataIdToken = jwt.verify(token, process.env.jwt_secret);
+      const dataEvent = {
+        ...req.body,
+      };
+
+      if (dataEvent) {
+        const checkVerifyedUser = await db.User.findByPk(dataIdToken.id);
+        // console.log(checkVerifyedUser.dataValues.is_verified);
+        // console.log(checkVerifyedUser, "ini data user");
+        if (
+          checkVerifyedUser.dataValues.is_verified == null ||
+          checkVerifyedUser.dataValues.is_verified == 0
+        ) {
+          throw new Error("Silahkan verifikasi akun anda dulu");
+        }
+
+        // fetch location
+        const locationInput = req.body.location ? req.body.location : "";
+        const locationId = [];
+        if (locationInput !== "") {
+          const locationFind = await db.Location.findAll({
+            where: {
+              location_name: {
+                [Op.like]: `%${locationInput}%`,
+              },
+            },
+          })
+            .then((result) => locationId.push(result[0].dataValues))
+            .catch((err) => {
+              throw new Error("Lokasi tidak di temukan");
+            });
+        }
+        // console.log(locationId, "ini locaiton");
+
+        // fetch category event
+        const categoryEvent = await db.Event_category.findAll({
+          where: {
+            category: {
+              [Op.like]: `%${req.body?.category}%`,
+            },
+          },
+        })
+          .then((result) => result)
+          .catch((err) => {
+            throw new Error("Category tidak di temukan");
+          });
+
+        if (categoryEvent.length === 0)
+          throw new Error("Category tidak di temukan");
+
+        const dataCreate = {
+          ...dataEvent,
+          event_creator_userid: dataIdToken.id,
+          isfree: 0,
+          is_sponsored: 0,
+        };
+        if (dataCreate.vip_ticket_price == "") {
+          dataCreate.isfree = 1;
+          dataCreate.is_sponsored = 1;
+          dataCreate.vip_ticket_price = 0;
+          dataCreate.vip_ticket_stock = 0;
+          dataCreate.presale_ticket_price = 0;
+          dataCreate.presale_ticket_stock = 0;
+          dataCreate.normal_ticket_price = 0;
+          dataCreate.normal_ticket_stock = 0;
+        }
+
+        dataCreate.location = locationId[0].id;
+        dataCreate.category = categoryEvent[0].id;
+        console.log(dataCreate);
+        console.log(locationId[0].id, "ini category");
+        console.log(categoryEvent[0].id, "ini category");
+
+        // Find Event
+        const findEvent = await db.Event.findOne({
+          where: {
+            id: req.params.id,
+          },
+        });
+
+        if (!findEvent) {
+          throw new Error("Event tidak di temukan");
+        }
+        // console.log(findEvent.event_creator_userid, "INI ECETTTTTT");
+
+        if (findEvent.event_creator_userid != dataIdToken.id) {
+          throw new Error("Tidak bisa edit event");
+        } else {
+          //Update Event
+          await findEvent.update(dataCreate);
+          // console.log(findEvent.dataValues, "ini event");
+          const findPhotoEvent = await db.Photo_event.findOne({
+            where: {
+              eventid: req.params.id,
+            },
+          });
+          if (!findPhotoEvent) {
+            throw new Error("Photo event tidak di temukan");
+          }
+          // console.log(findPhotoEvent.dataValues, "in photo");
+
+          for (const img of tempImg) {
+            await db.Photo_event.update(
+              { url: img },
+              {
+                where: { eventid: req.params.id },
+              }
+            );
+          }
+          next();
+        }
+      }
+    } catch (err) {
+      res.json({
+        status: 500,
+        message: err?.message,
+      });
+    }
+  }
+  async getEventsById(req, res) {
+    const { id } = req.params;
+    await db.Event.findByPk(id, {
+      include: [
+        {
+          model: db.Photo_event,
+          as: "Photo_event",
+          attributes: ["eventid", "url"],
+        },
+      ],
+    })
+      .then((result) =>
+        res.status(201).json({
+          message: "Data berhasil di update",
+          result,
+        })
+      )
+      .catch((err) => res.status(500).send(err?.message));
+  }
+  async deleteEventWithImage(req, res) {
+    try {
+      const { token } = req;
+      const dataToken = jwt.verify(token, process.env.jwt_secret);
+
+      const checkVerif = await db.User.findByPk(dataToken.id);
+      // console.log(checkVerif.dataValues);
+      if (checkVerif.dataValues.is_verified == 0) {
+        throw new Error("Silahkan verifikakasi akun anda dulu");
+      }
+      //fetch event
+      const findEvent = await db.Event.findOne({
+        where: { id: req.params.id },
+      });
+      if (!findEvent) {
+        throw new Error("Event tidak di temukan");
+      }
+      if (findEvent.dataValues.event_creator_userid != dataToken.id) {
+        throw new Error("Tidak bisa delete event");
+      } else {
+        await db.Event.destroy({ where: { id: req.params.id } });
+        await db.Photo_event.destroy({
+          where: { eventid: req.params.id },
+        });
+
+        res.json({
+          status: 201,
+          message: "Event berhasil di hapus",
+        });
+      }
+    } catch (err) {
+      res.json({
+        status: 500,
+        message: err.message,
+      });
+    }
+  }
+  async getEventWithUser(req, res) {
+    try {
+      const { token } = req;
+      const idUser = jwt.verify(token, process.env.jwt_secret);
+      if (!idUser) {
+        throw new Error("Silahkan login dulu");
+      }
+      const findEvent = await db.Event.findAll({
+        where: {
+          event_creator_userid: idUser.id,
+        },
+        include: [
+          {
+            model: db.User,
+            as: "User",
+            attributes: { exclude: [] },
+          },
+          {
+            model: db.Photo_event,
+            as: "Photo_event",
+            attributes: ["eventid", "url"],
+          },
+        ],
+      });
+      findEvent.forEach((event) => {
+        console.log(event.dataValues);
+      });
+
+      res.status(201).send(findEvent);
+    } catch (err) {
+      res.json({
+        status: 400,
+        message: err?.message,
+      });
+    }
+    const { token } = req;
   }
 }
 

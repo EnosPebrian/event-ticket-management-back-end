@@ -1,4 +1,5 @@
 const transactionController = require("../controller/transactionController");
+const authVerificator = require("../middlewares/authVerificator");
 const {
   transactionValidationRules,
   validate,
@@ -9,6 +10,16 @@ route.get("/", transactionController.getAll.bind(transactionController));
 route.get(
   "/:id",
   transactionController.getTransactionById.bind(transactionController)
+);
+
+route.get(
+  "/userEvent/:id",
+  transactionController.getUserByEvent.bind(transactionController)
+);
+
+route.get(
+  "/eventUser/:id",
+  transactionController.getEventByUser.bind(transactionController)
 );
 
 route.post(
