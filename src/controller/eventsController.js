@@ -27,19 +27,19 @@ class EventController extends Controller {
         include: [
           [
             db.sequelize.literal(
-              `(SELECT AVG(ratings) FROM reviews WHERE reviews.eventid = Event.id GROUP BY reviews.eventid)`
+              `(SELECT AVG(ratings) FROM Reviews WHERE Reviews.eventid = Event.id GROUP BY Reviews.eventid)`
             ),
             "Average_ratings",
           ],
           [
             db.sequelize.literal(
-              `(SELECT count(ratings) FROM reviews WHERE reviews.eventid = Event.id GROUP BY reviews.eventid)`
+              `(SELECT count(ratings) FROM Reviews WHERE Reviews.eventid = Event.id GROUP BY Reviews.eventid)`
             ),
             "Number_of_ratings",
           ],
           [
             db.sequelize.literal(
-              `(SELECT count(*) FROM tickets WHERE tickets.eventid = Event.id GROUP BY tickets.eventid)`
+              `(SELECT count(*) FROM Tickets WHERE Tickets.eventid = Event.id GROUP BY Tickets.eventid)`
             ),
             "Number_of_ticket_sold",
           ],
