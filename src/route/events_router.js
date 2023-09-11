@@ -33,7 +33,6 @@ route.patch(
     prefix: "IMG-EVENT-UPDATE",
     filetype: "image",
   }).array("image"),
-  validationEvent,
   eventsController.updateEvent.bind(eventsController),
   eventsController.getEventsById.bind(eventsController)
 );

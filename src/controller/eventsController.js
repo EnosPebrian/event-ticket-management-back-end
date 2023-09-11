@@ -264,7 +264,6 @@ class EventController extends Controller {
     const fileImg = req?.files;
     const tempImg = fileImg.map((img) => img.filename);
 
-    console.log(tempImg);
     // const formData = new FormData();
     // formData.append();
 
@@ -354,32 +353,58 @@ class EventController extends Controller {
         if (!findEvent) {
           throw new Error("Event tidak di temukan");
         }
-        // console.log(findEvent.event_creator_userid, "INI ECETTTTTT");
 
+        //Check is verify
         if (findEvent.event_creator_userid != dataIdToken.id) {
           throw new Error("Tidak bisa edit event");
         } else {
           //Update Event
           await findEvent.update(dataCreate);
-          // console.log(findEvent.dataValues, "ini event");
-          const findPhotoEvent = await db.Photo_event.findOne({
+
+          //Find old image event
+          // ...
+
+          // Find old image event
+          const oldPhoto = [];
+          const findPhotoEvent = await db.Photo_event.findAll({
             where: {
               eventid: req.params.id,
             },
           });
+          findPhotoEvent.map((image) => oldPhoto.push(image.dataValues));
+          // console.log(oldPhoto);
           if (!findPhotoEvent) {
             throw new Error("Photo event tidak di temukan");
           }
           // console.log(findPhotoEvent.dataValues, "in photo");
 
+          // ...
+
+          const newImages = [];
+          console.log(newImages);
           for (const img of tempImg) {
-            await db.Photo_event.update(
-              { url: img },
-              {
-                where: { eventid: req.params.id },
-              }
-            );
+            if (!oldPhoto.some((photo) => photo.url === img)) {
+              newImages.push({ eventid: req.params.id, url: img });
+            }
           }
+
+          for (const newPhoto of newImages) {
+            const exixtingPhoto = oldPhoto.find(
+              (photo) => photo.url === newPhoto.url
+            );
+            console.log(newPhoto);
+
+            if (exixtingPhoto) {
+              await db.Photo_event.update(newPhoto, {
+                where: { eventid: req.params.id, url: newPhoto.url },
+              });
+            } else {
+              await db.Photo_event.create(newPhoto);
+            }
+          }
+
+          // ...
+
           next();
         }
       }
