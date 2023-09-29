@@ -25,16 +25,19 @@ class TransactionController extends Controller {
       await db.sequelize.transaction(async (t) => {
         const { event_id } = req.body;
         const { token } = req;
+        console.log(token);
 
         const idUser = jwt.verify(token, process.env.jwt_secret);
-        // console.log(idUser.id);
+        console.log("idUser", idUser);
         const user_id = idUser.id;
 
         const userData = await db.User.findByPk(user_id, { transaction: t });
         if (!userData) throw new Error("user not found");
+        // console.log("userData", userData);
 
         const eventData = await db.Event.findByPk(event_id, { transaction: t });
         if (!eventData) throw new Error("event not found");
+        // console.log("eventData", eventData);
 
         if (eventData.dataValues.isfree == false) {
           if (req.body.vip_ticket) {
@@ -46,16 +49,10 @@ class TransactionController extends Controller {
             if (eventData.vip_ticket_stock < 1)
               return res.status(400).send("tiket vip sudah habis");
             //kalau masih ada, kurangin stok 1
-            await eventData.increment(
-              { vip_ticket_stock: -1 },
-              { transaction: t }
-            );
+            await eventData.increment({ vip_ticket_stock: -1 });
 
             //ngurangin saldo user
-            await userData.increment(
-              { points: -eventData.vip_ticket_price },
-              { transaction: t }
-            );
+            await userData.increment({ points: -eventData.vip_ticket_price });
             const transactionData = await this.db.create({
               user_id: user_id,
               event_id: event_id,
