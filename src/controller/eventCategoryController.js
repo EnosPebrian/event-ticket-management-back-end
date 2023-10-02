@@ -10,6 +10,7 @@ class CategoryController extends Controller {
     const { completed_event } = req.query;
     this.db
       .findAll({
+        logging: false,
         attributes: ["category"],
         include: [
           {
@@ -34,6 +35,7 @@ class CategoryController extends Controller {
     const { category } = req.query;
     this.db
       .findAll({
+        logging: false,
         where: {
           ...(category && {
             category: { [Op.like]: `%${category}%` },

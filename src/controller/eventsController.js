@@ -2,6 +2,12 @@ const { Op, where, DATE } = require("sequelize");
 const db = require("../sequelize/models");
 const Controller = require("./Controller");
 const jwt = require("jsonwebtoken");
+const { createClient } = require("redis");
+const client = createClient({
+  url: "redis://localhost:6379",
+  legacyMode: true,
+});
+client.on("error", (err) => console.log("Redis Client Error", err));
 
 class EventController extends Controller {
   constructor(modelname) {
@@ -129,38 +135,45 @@ class EventController extends Controller {
         ],
       }),
     };
-    this.db
-      .findAndCountAll({
-        ...(limit && { limit: Number(limit) }),
-        ...(!limit && { limit: 12 }),
-        ...{ offset: (page ? page - 1 : 0) * (limit ? limit : 12) },
-        ...queryString,
-      })
-      .then((result) => {
-        const number_of_events = result.count;
-        const number_of_pages = Math.ceil(
-          number_of_events / (limit ? limit : 12)
-        );
-        if (page > number_of_pages || page < 1)
-          return res.status(400).send("No item in this page");
-        return res.send({
-          number_of_pages: number_of_pages,
-          data: result.rows,
+
+    try {
+      this.db
+        .findAll({
+          logging: false,
+          ...(limit && { limit: Number(limit) }),
+          ...(!limit && { limit: 12 }),
+          ...{ offset: (page ? page - 1 : 0) * (limit ? limit : 12) },
+          ...queryString,
+        })
+        .then((result) => {
+          const number_of_pages = Math.ceil(
+            result.length / (limit ? limit : 12)
+          );
+          const data = {
+            number_of_pages: number_of_pages,
+            data: result,
+          };
+          if (page > number_of_pages || page < 1) {
+            // client.setEx(
+            //   JSON.stringify(req.query),
+            //   120,
+            //   "No item in this page"
+            // );
+            return res.status(400).send("No item in this page");
+          }
+          // client.setEx(JSON.stringify(req.query), 120, JSON.stringify(data));
+          return res.send(data);
         });
-      })
-      .catch((err) => res.status(500).send(err?.message));
+      // });
+    } catch (err) {
+      return res.status(500).send(err?.message);
+    }
   }
 
   async createEvent(req, res) {
     const fileImg = req?.files;
     let tempImg = null;
     tempImg = fileImg.map((img) => img.filename);
-
-    console.log(tempImg);
-    // const formData = new FormData();
-    // formData.append();
-
-    // console.log(req.body);
     try {
       const { token } = req;
       const dataIdToken = jwt.verify(token, process.env.jwt_secret);
@@ -172,11 +185,9 @@ class EventController extends Controller {
         is_sponsored: 0,
         url: req.body,
       };
-      console.log(dataEvent);
+
       if (dataEvent) {
         const checkVerifyedUser = await db.User.findByPk(dataIdToken.id);
-        // console.log(checkVerifyedUser.dataValues.is_verified);
-        console.log(checkVerifyedUser, "ini data user");
         if (
           checkVerifyedUser.dataValues.is_verified == null ||
           checkVerifyedUser.dataValues.is_verified == 0
@@ -200,7 +211,6 @@ class EventController extends Controller {
               throw new Error("Lokasi tidak di temukan");
             });
         }
-        // console.log(locationId, "ini locaiton");
 
         // fetch category event
         const categoryEvent = await db.Event_category.findAll({
@@ -260,6 +270,7 @@ class EventController extends Controller {
       });
     }
   }
+  
   async updateEvent(req, res, next) {
     const fileImg = req?.files;
     const tempImg = fileImg.map((img) => img.filename);

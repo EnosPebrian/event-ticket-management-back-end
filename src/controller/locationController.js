@@ -35,6 +35,7 @@ class ReviewController extends Controller {
     const { location_name } = req.query;
     this.db
       .findAll({
+        logging: false,
         where: {
           ...(location_name && {
             location_name: { [Op.like]: `%${location_name}%` },

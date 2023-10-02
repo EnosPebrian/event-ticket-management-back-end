@@ -1,0 +1,4 @@
+cd /var/www/html/event-ticket-management-api
+
+/etc/nginx/conf.d/
+
