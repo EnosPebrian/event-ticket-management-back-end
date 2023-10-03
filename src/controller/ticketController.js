@@ -48,6 +48,22 @@ class ticketController extends Controller {
         });
       });
   }
+
+  async create(req, res) {
+    const { userid, eventid, ticketcode, category, ticket_price } = req.body;
+    try {
+      const pushTicket = await db.Ticket.create({
+        userid,
+        eventid,
+        ticketcode,
+        category,
+        ticket_price,
+      });
+      res.status(201).send(pushTicket);
+    } catch (err) {
+      res.status(500).send(err?.message);
+    }
+  }
 }
 
 module.exports = new ticketController(`Ticket`);
