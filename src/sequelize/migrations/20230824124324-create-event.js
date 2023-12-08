@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Events", {
+    await queryInterface.createTable('Events', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,14 +14,14 @@ module.exports = {
       },
       location: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `Locations` }, key: "id" },
+        references: { model: { tableName: `Locations` }, key: 'id' },
       },
       venue: {
         type: Sequelize.STRING,
       },
       category: {
         type: Sequelize.INTEGER,
-        references: { model: { tableName: `event_categories` }, key: "id" },
+        references: { model: { tableName: `Event_categories` }, key: 'id' },
       },
       date_start: {
         type: Sequelize.DATEONLY,
@@ -77,6 +77,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Events");
+    await queryInterface.dropTable('Events');
   },
 };

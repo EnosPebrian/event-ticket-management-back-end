@@ -1,13 +1,13 @@
-const { Op, where, DATE } = require("sequelize");
-const db = require("../sequelize/models");
-const Controller = require("./Controller");
-const jwt = require("jsonwebtoken");
-const { createClient } = require("redis");
+const { Op, where, DATE } = require('sequelize');
+const db = require('../sequelize/models');
+const Controller = require('./Controller');
+const jwt = require('jsonwebtoken');
+const { createClient } = require('redis');
 const client = createClient({
-  url: "redis://localhost:6379",
+  url: 'redis://localhost:6379',
   legacyMode: true,
 });
-client.on("error", (err) => console.log("Redis Client Error", err));
+client.on('error', (err) => console.log('Redis Client Error', err));
 
 class EventController extends Controller {
   constructor(modelname) {
@@ -35,19 +35,19 @@ class EventController extends Controller {
             db.sequelize.literal(
               `(SELECT AVG(ratings) FROM Reviews WHERE Reviews.eventid = Event.id GROUP BY Reviews.eventid)`
             ),
-            "Average_ratings",
+            'Average_ratings',
           ],
           [
             db.sequelize.literal(
               `(SELECT count(ratings) FROM Reviews WHERE Reviews.eventid = Event.id GROUP BY Reviews.eventid)`
             ),
-            "Number_of_ratings",
+            'Number_of_ratings',
           ],
           [
             db.sequelize.literal(
               `(SELECT count(*) FROM Tickets WHERE Tickets.eventid = Event.id GROUP BY Tickets.eventid)`
             ),
-            "Number_of_ticket_sold",
+            'Number_of_ticket_sold',
           ],
         ],
       },
@@ -58,30 +58,30 @@ class EventController extends Controller {
             { name: { [Op.like]: `%${name}%` } },
             { venue: { [Op.like]: `%${name}%` } },
             { description: { [Op.like]: `%${name}%` } },
-            { "$Location.location_name$": { [Op.like]: `%${name}%` } },
-            { "$Event_category.category$": { [Op.like]: `%${name}%` } },
+            { '$Location.location_name$': { [Op.like]: `%${name}%` } },
+            { '$Event_category.category$': { [Op.like]: `%${name}%` } },
           ],
         }),
-        ...(typeof location === "string" && {
-          "$Location.location_name$": { [Op.like]: `%${location}%` },
+        ...(typeof location === 'string' && {
+          '$Location.location_name$': { [Op.like]: `%${location}%` },
         }),
-        ...(typeof location === "object" && {
+        ...(typeof location === 'object' && {
           [Op.or]: location.map((val) => {
-            return { "$Location.location_name$": { [Op.like]: `%${val}%` } };
+            return { '$Location.location_name$': { [Op.like]: `%${val}%` } };
           }),
         }),
-        ...(typeof category === "string" && {
-          "$Event_category.category$": { [Op.in]: [category] },
+        ...(typeof category === 'string' && {
+          '$Event_category.category$': { [Op.in]: [category] },
         }),
-        ...(typeof category === "object" && {
-          "$Event_category.category$": { [Op.in]: category },
+        ...(typeof category === 'object' && {
+          '$Event_category.category$': { [Op.in]: category },
         }),
         ...(is_sponsored && { is_sponsored: true }),
         ...(date_start && { date_start: { [Op.gte]: date_start } }),
         ...(!date_start &&
           !completed_event && { date_start: { [Op.gte]: new Date() } }),
         ...(!date_start &&
-          completed_event && { date_start: { [Op.gte]: "2023-01-01" } }),
+          completed_event && { date_start: { [Op.gte]: '2023-01-01' } }),
         ...(date_end && { date_end: { [Op.lte]: date_end } }),
         ...(event_creator_userid && {
           event_creator_userid: event_creator_userid,
@@ -90,47 +90,47 @@ class EventController extends Controller {
       include: [
         {
           model: db.Photo_event,
-          as: "Photo_event",
-          required: true,
-          attributes: ["url", "id"],
+          as: 'Photo_event',
+          required: false,
+          attributes: ['url', 'id'],
         },
         {
           model: db.Event_category,
-          as: "Event_category",
+          as: 'Event_category',
           required: true,
-          attributes: ["category"],
+          attributes: ['category'],
         },
         {
           model: db.Location,
-          as: "Location",
+          as: 'Location',
           required: true,
-          attributes: ["location_name"],
+          attributes: ['location_name'],
         },
         {
           model: db.User,
-          as: "User",
+          as: 'User',
           required: true,
-          attributes: ["username"],
+          attributes: ['username'],
         },
       ],
-      ...(typeof order_by === "object" && {
+      ...(typeof order_by === 'object' && {
         order: order_by.map((value) => {
-          if (value === "HighestRating")
-            return [db.sequelize.col("Average_ratings"), "desc"];
-          if (value === "MostPopular")
-            return [db.sequelize.col("Number_of_ticket_sold"), "desc"];
-          if (value === "EarlierbyDate")
-            return [db.sequelize.col("date_start"), "asc"];
+          if (value === 'HighestRating')
+            return [db.sequelize.col('Average_ratings'), 'desc'];
+          if (value === 'MostPopular')
+            return [db.sequelize.col('Number_of_ticket_sold'), 'desc'];
+          if (value === 'EarlierbyDate')
+            return [db.sequelize.col('date_start'), 'asc'];
         }),
       }),
-      ...(typeof order_by === "string" && {
+      ...(typeof order_by === 'string' && {
         order: [
-          order_by === "HighestRating"
-            ? [db.sequelize.col("Average_ratings"), "desc"]
-            : order_by === "MostPopular"
-            ? [db.sequelize.col("Number_of_ticket_sold"), "desc"]
-            : order_by === "EarlierbyDate"
-            ? [db.sequelize.col("date_start"), "asc"]
+          order_by === 'HighestRating'
+            ? [db.sequelize.col('Average_ratings'), 'desc']
+            : order_by === 'MostPopular'
+            ? [db.sequelize.col('Number_of_ticket_sold'), 'desc']
+            : order_by === 'EarlierbyDate'
+            ? [db.sequelize.col('date_start'), 'asc']
             : null,
         ],
       }),
@@ -138,8 +138,9 @@ class EventController extends Controller {
 
     try {
       this.db
-        .findAll({
-          logging: false,
+        .findAndCountAll({
+          // logging: false,
+          distinct: true,
           ...(limit && { limit: Number(limit) }),
           ...(!limit && { limit: 12 }),
           ...{ offset: (page ? page - 1 : 0) * (limit ? limit : 12) },
@@ -147,11 +148,11 @@ class EventController extends Controller {
         })
         .then((result) => {
           const number_of_pages = Math.ceil(
-            result.length / (limit ? limit : 12)
+            result.count / (limit ? limit : 12)
           );
           const data = {
             number_of_pages: number_of_pages,
-            data: result,
+            data: result.rows,
           };
           if (page > number_of_pages || page < 1) {
             // client.setEx(
@@ -159,8 +160,9 @@ class EventController extends Controller {
             //   120,
             //   "No item in this page"
             // );
-            return res.status(400).send("No item in this page");
+            return res.status(400).send('No item in this page');
           }
+          console.log(result.count);
           // client.setEx(JSON.stringify(req.query), 120, JSON.stringify(data));
           return res.send(data);
         });
@@ -180,7 +182,7 @@ class EventController extends Controller {
       const dataEvent = {
         ...req.body,
         event_creator_userid: dataIdToken.id,
-        date_start: DATE("NOW"),
+        date_start: DATE('NOW'),
         isfree: 0,
         is_sponsored: 0,
         url: req.body,
@@ -192,13 +194,13 @@ class EventController extends Controller {
           checkVerifyedUser.dataValues.is_verified == null ||
           checkVerifyedUser.dataValues.is_verified == 0
         ) {
-          throw new Error("Silahkan verifikasi akun anda dulu");
+          throw new Error('Silahkan verifikasi akun anda dulu');
         }
 
         // fetch location
-        const locationInput = req.body.location ? req.body.location : "";
+        const locationInput = req.body.location ? req.body.location : '';
         const locationId = [];
-        if (locationInput !== "") {
+        if (locationInput !== '') {
           const locationFind = await db.Location.findAll({
             where: {
               location_name: {
@@ -208,7 +210,7 @@ class EventController extends Controller {
           })
             .then((result) => locationId.push(result[0].dataValues))
             .catch((err) => {
-              throw new Error("Lokasi tidak di temukan");
+              throw new Error('Lokasi tidak di temukan');
             });
         }
 
@@ -222,14 +224,14 @@ class EventController extends Controller {
         })
           .then((result) => result)
           .catch((err) => {
-            throw new Error("Category tidak di temukan");
+            throw new Error('Category tidak di temukan');
           });
 
         if (categoryEvent.length === 0)
-          throw new Error("Category tidak di temukan");
+          throw new Error('Category tidak di temukan');
 
         const dataCreate = { ...dataEvent };
-        if (dataCreate.vip_ticket_price == "") {
+        if (dataCreate.vip_ticket_price == '') {
           dataCreate.isfree = 1;
           dataCreate.is_sponsored = 1;
           dataCreate.vip_ticket_price = 0;
@@ -258,7 +260,7 @@ class EventController extends Controller {
         });
         const addPhotoEvent = await Promise.all(addPhotoEventPromise);
         res.status(200).json({
-          message: "Create event success",
+          message: 'Create event success',
           createEvent,
           addPhotoEvent,
         });
@@ -270,7 +272,7 @@ class EventController extends Controller {
       });
     }
   }
-  
+
   async updateEvent(req, res, next) {
     const fileImg = req?.files;
     const tempImg = fileImg.map((img) => img.filename);
@@ -294,13 +296,13 @@ class EventController extends Controller {
           checkVerifyedUser.dataValues.is_verified == null ||
           checkVerifyedUser.dataValues.is_verified == 0
         ) {
-          throw new Error("Silahkan verifikasi akun anda dulu");
+          throw new Error('Silahkan verifikasi akun anda dulu');
         }
 
         // fetch location
-        const locationInput = req.body.location ? req.body.location : "";
+        const locationInput = req.body.location ? req.body.location : '';
         const locationId = [];
-        if (locationInput !== "") {
+        if (locationInput !== '') {
           const locationFind = await db.Location.findAll({
             where: {
               location_name: {
@@ -310,7 +312,7 @@ class EventController extends Controller {
           })
             .then((result) => locationId.push(result[0].dataValues))
             .catch((err) => {
-              throw new Error("Lokasi tidak di temukan");
+              throw new Error('Lokasi tidak di temukan');
             });
         }
         // console.log(locationId, "ini locaiton");
@@ -325,11 +327,11 @@ class EventController extends Controller {
         })
           .then((result) => result)
           .catch((err) => {
-            throw new Error("Category tidak di temukan");
+            throw new Error('Category tidak di temukan');
           });
 
         if (categoryEvent.length === 0)
-          throw new Error("Category tidak di temukan");
+          throw new Error('Category tidak di temukan');
 
         const dataCreate = {
           ...dataEvent,
@@ -337,7 +339,7 @@ class EventController extends Controller {
           isfree: 0,
           is_sponsored: 0,
         };
-        if (dataCreate.vip_ticket_price == "") {
+        if (dataCreate.vip_ticket_price == '') {
           dataCreate.isfree = 1;
           dataCreate.is_sponsored = 1;
           dataCreate.vip_ticket_price = 0;
@@ -351,8 +353,8 @@ class EventController extends Controller {
         dataCreate.location = locationId[0].id;
         dataCreate.category = categoryEvent[0].id;
         console.log(dataCreate);
-        console.log(locationId[0].id, "ini category");
-        console.log(categoryEvent[0].id, "ini category");
+        console.log(locationId[0].id, 'ini category');
+        console.log(categoryEvent[0].id, 'ini category');
 
         // Find Event
         const findEvent = await db.Event.findOne({
@@ -362,12 +364,12 @@ class EventController extends Controller {
         });
 
         if (!findEvent) {
-          throw new Error("Event tidak di temukan");
+          throw new Error('Event tidak di temukan');
         }
 
         //Check is verify
         if (findEvent.event_creator_userid != dataIdToken.id) {
-          throw new Error("Tidak bisa edit event");
+          throw new Error('Tidak bisa edit event');
         } else {
           //Update Event
           await findEvent.update(dataCreate);
@@ -385,7 +387,7 @@ class EventController extends Controller {
           findPhotoEvent.map((image) => oldPhoto.push(image.dataValues));
           // console.log(oldPhoto);
           if (!findPhotoEvent) {
-            throw new Error("Photo event tidak di temukan");
+            throw new Error('Photo event tidak di temukan');
           }
           // console.log(findPhotoEvent.dataValues, "in photo");
 
@@ -432,14 +434,14 @@ class EventController extends Controller {
       include: [
         {
           model: db.Photo_event,
-          as: "Photo_event",
-          attributes: ["eventid", "url"],
+          as: 'Photo_event',
+          attributes: ['eventid', 'url'],
         },
       ],
     })
       .then((result) =>
         res.status(201).json({
-          message: "Data berhasil di update",
+          message: 'Data berhasil di update',
           result,
         })
       )
@@ -453,17 +455,17 @@ class EventController extends Controller {
       const checkVerif = await db.User.findByPk(dataToken.id);
       // console.log(checkVerif.dataValues);
       if (checkVerif.dataValues.is_verified == 0) {
-        throw new Error("Silahkan verifikakasi akun anda dulu");
+        throw new Error('Silahkan verifikakasi akun anda dulu');
       }
       //fetch event
       const findEvent = await db.Event.findOne({
         where: { id: req.params.id },
       });
       if (!findEvent) {
-        throw new Error("Event tidak di temukan");
+        throw new Error('Event tidak di temukan');
       }
       if (findEvent.dataValues.event_creator_userid != dataToken.id) {
-        throw new Error("Tidak bisa delete event");
+        throw new Error('Tidak bisa delete event');
       } else {
         await db.Event.destroy({ where: { id: req.params.id } });
         await db.Photo_event.destroy({
@@ -472,7 +474,7 @@ class EventController extends Controller {
 
         res.json({
           status: 201,
-          message: "Event berhasil di hapus",
+          message: 'Event berhasil di hapus',
         });
       }
     } catch (err) {
@@ -487,7 +489,7 @@ class EventController extends Controller {
       const { token } = req;
       const idUser = jwt.verify(token, process.env.jwt_secret);
       if (!idUser) {
-        throw new Error("Silahkan login dulu");
+        throw new Error('Silahkan login dulu');
       }
       const findEvent = await db.Event.findAll({
         where: {
@@ -496,13 +498,13 @@ class EventController extends Controller {
         include: [
           {
             model: db.User,
-            as: "User",
+            as: 'User',
             attributes: { exclude: [] },
           },
           {
             model: db.Photo_event,
-            as: "Photo_event",
-            attributes: ["eventid", "url"],
+            as: 'Photo_event',
+            attributes: ['eventid', 'url'],
           },
         ],
       });
